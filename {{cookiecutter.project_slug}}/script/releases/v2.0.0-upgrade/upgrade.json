@@ -1,0 +1,11 @@
+{
+    "name": "counter-upgrade-v2",
+    "from": "1.0.0",
+    "to": "2.0.0",
+    "phases": [
+      {
+        "type": "eoa",
+        "filename": "1-upgrade.s.sol"
+      }
+    ]
+}

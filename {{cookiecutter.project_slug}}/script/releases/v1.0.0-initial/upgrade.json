@@ -1,0 +1,11 @@
+{
+    "name": "initial-counter-deployment",
+    "from": "0.0.0",
+    "to": "1.0.0",
+    "phases": [
+      {
+        "type": "eoa",
+        "filename": "1-deploy.s.sol"
+      }
+    ]
+}

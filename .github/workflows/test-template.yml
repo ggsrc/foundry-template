@@ -32,12 +32,14 @@ jobs:
         run: |
           cookiecutter foundry-template --no-input \
             project_name="TestProject" \
+            contact_email="security@testproject.com" \
             license="MIT" \
             use_openzeppelin="y" \
             use_openzeppelin_upgradeable="y" \
             use_zeus="y" \
             zeus_metadata_repo="https://github.com/test-org/test-metadata" \
-            cleanup_demo="n"
+            cleanup_demo="n" \
+            enable_auto_update="y"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -79,6 +81,7 @@ jobs:
           test -f package.json && echo "  - package.json ✓"
           test -f remappings.txt && echo "  - remappings.txt ✓"
           test -f .zeus && echo "  - .zeus ✓"
+          test -f SECURITY.md && echo "  - SECURITY.md ✓"
           
           echo "✅ Checking directories exist:"
           test -d src && echo "  - src/ ✓"
@@ -98,6 +101,10 @@ jobs:
           
           echo "✅ Checking Zeus configuration:"
           grep -q "test-org/test-metadata" .zeus && echo "  - Zeus metadata repo ✓"
+          
+          echo "✅ Checking SECURITY.md content:"
+          grep -q "security@testproject.com" SECURITY.md && echo "  - Contact email ✓"
+          grep -q "TestProject" SECURITY.md && echo "  - Project name ✓"
           
           echo ""
           echo "✅ Template verification completed successfully!" 

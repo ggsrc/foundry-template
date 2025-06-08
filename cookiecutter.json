@@ -13,5 +13,8 @@
         "use_openzeppelin_upgradeable": "Include OpenZeppelin upgradeable contracts?",
         "use_zeus": "Include Zeus toolkit?",
         "cleanup_demo": "Remove demo/example files from template?"
-    }
+    },
+    "_copy_without_render": [
+        ".github/**/*"
+    ]
 }

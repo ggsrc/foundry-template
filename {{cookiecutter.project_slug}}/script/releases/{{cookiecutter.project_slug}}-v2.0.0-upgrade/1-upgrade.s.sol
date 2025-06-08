@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity ^0.8.17;
 
 import { EOADeployer } from "@zeus-templates/templates/EOADeployer.sol";
 import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
@@ -15,6 +15,9 @@ contract UpgradeToV2 is EOADeployer {
     using Env for Env.DeployedImpl;
     using ProxyHelper for address;
 
+    // Store deployed V2 implementation address for validation
+    address public deployedImplementationV2;
+
     function _runAsEOA() internal override {
         // Get deployer address to ensure using same account for upgrade
         address deployer = Env.deployer();
@@ -23,9 +26,10 @@ contract UpgradeToV2 is EOADeployer {
         vm.startBroadcast(deployer);
 
         // 1. Deploy new implementation contract V2
-        address implementationV2 = deployImpl({
+        deployedImplementationV2 = address(new CounterV2());
+        deployImpl({
             name: type(CounterV2).name, // Use actual contract name "CounterV2"
-            deployedTo: address(new CounterV2())
+            deployedTo: deployedImplementationV2
         });
 
         // 2. Use Env helper library to get ProxyAdmin and proxy contract
@@ -35,13 +39,13 @@ contract UpgradeToV2 is EOADeployer {
         // 3. Update proxy implementation
         admin.upgradeAndCall(
             ITransparentUpgradeableProxy(address(counterProxy)),
-            implementationV2,
+            deployedImplementationV2,
             "" // Empty data, no function call
         );
 
         // 4. Output upgrade information
         console2.log("Network:", block.chainid);
-        console2.log("CounterV2 implementation deployed to:", implementationV2);
+        console2.log("CounterV2 implementation deployed to:", deployedImplementationV2);
         console2.log("Proxy at", address(counterProxy), "upgraded to new implementation");
         console2.log("Environment type:", Env.isTestEnvironment() ? "test" : "production");
 
@@ -65,16 +69,15 @@ contract UpgradeToV2 is EOADeployer {
     function _validateUpgrade() internal view {
         // Get contract instances
         Counter counterProxy = Env.proxy.counter();
-        CounterV2 counterV2Impl = Env.counterV2Impl(Env.impl);
 
         // Validate proxy now points to new implementation
         address currentImpl = _getProxyImpl(address(counterProxy));
-        assertTrue(currentImpl == address(counterV2Impl), "Proxy implementation not upgraded");
+        assertTrue(currentImpl == deployedImplementationV2, "Proxy implementation not upgraded");
     }
 
     // Validate implementation contract constructor setup
     function _validateImplementation() internal view {
-        CounterV2 counterV2Impl = Env.counterV2Impl(Env.impl);
+        CounterV2 counterV2Impl = CounterV2(deployedImplementationV2);
 
         // Validate implementation contract exists
         assertTrue(address(counterV2Impl).code.length > 0, "Implementation V2 contract has no code");
@@ -82,7 +85,7 @@ contract UpgradeToV2 is EOADeployer {
 
     // Validate initialization is correct
     function _validateInitialization() internal {
-        CounterV2 counterV2Impl = Env.counterV2Impl(Env.impl);
+        CounterV2 counterV2Impl = CounterV2(deployedImplementationV2);
 
         // Validate implementation contract initialization function is disabled (OpenZeppelin v5 uses custom errors)
         vm.expectRevert(abi.encodeWithSignature("InvalidInitialization()"));

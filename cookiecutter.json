@@ -5,14 +5,16 @@
     "use_openzeppelin": ["y", "n"],
     "use_openzeppelin_upgradeable": ["y", "n"],
     "use_zeus": ["y", "n"],
+    "zeus_metadata_repo": "{% if cookiecutter.use_zeus == 'y' %}https://github.com/yourusername/your-metadata-repo{% endif %}",
     "cleanup_demo": ["y", "n"],
     "__prompts__": {
         "project_name": "What is your project name?",
         "license": "Choose a license for your project",
-        "use_openzeppelin": "Include OpenZeppelin contracts?",
-        "use_openzeppelin_upgradeable": "Include OpenZeppelin upgradeable contracts?",
-        "use_zeus": "Include Zeus toolkit?",
-        "cleanup_demo": "Remove demo/example files from template?"
+        "use_openzeppelin": "Include OpenZeppelin contracts? (demo files may be unusable if not installed)",
+        "use_openzeppelin_upgradeable": "Include OpenZeppelin upgradeable contracts? (demo files may be unusable if not installed)",
+        "use_zeus": "Include Zeus toolkit for deployment? (tool for managing complex deploy processes for onchain software. More info: https://layr-labs.github.io/zeus/)",
+        "zeus_metadata_repo": "{% if cookiecutter.use_zeus == 'y' %}GitHub repository URL for Zeus metadata storage (separate repo required for deployment records and configurations. Setup guide: https://layr-labs.github.io/zeus/getting-started/){% endif %}",
+        "cleanup_demo": "Remove demo/example files from template? (you can always remove them later)"
     },
     "_copy_without_render": [
         ".github/**/*"

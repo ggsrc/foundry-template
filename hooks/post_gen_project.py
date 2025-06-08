@@ -96,6 +96,7 @@ def handle_zeus_cleanup():
         remove_file('.zeus')
         remove_dir('script/releases')
         remove_from_env_example('ZEUS_ENV_DEPLOYER')
+        remove_file('.github/workflows/validate-deployment-scripts.yml')
         print("Zeus cleanup completed")
 
 def handle_openzeppelin():
@@ -130,6 +131,21 @@ def handle_demo_cleanup():
         else:
             print("Cleanup script not found, skipping demo cleanup")
 
+def install_dependencies():
+    """Install dependencies using yarn."""
+    if os.path.exists('package.json'):
+        try:
+            print("Installing dependencies with yarn...")
+            result = subprocess.run(['yarn', 'install'], check=True, capture_output=True, text=True)
+            print("Dependencies installed successfully!")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to install dependencies: {e}")
+            print("You can manually run 'yarn install' later")
+        except FileNotFoundError:
+            print("Yarn not found. Please install yarn or run 'npm install' manually")
+    else:
+        print("No package.json found, skipping dependency installation")
+
 def main():
     """Main post-generation logic."""
     # Handle license
@@ -146,6 +162,9 @@ def main():
     
     # Handle demo cleanup
     handle_demo_cleanup()
+    
+    # Install dependencies
+    install_dependencies()
     
     print(f"Project '{{cookiecutter.project_name}}' created successfully!")
 

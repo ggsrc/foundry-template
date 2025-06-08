@@ -1,91 +1,107 @@
-# name: Validate Deployment Scripts
+name: Validate Deployment Scripts
 
-# on:
-#   workflow_dispatch:
-#   pull_request:
-#     paths:
-#       - 'script/**'
-#       - '.github/workflows/validate-deployment-scripts.yml'
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'script/**'
+      - '.github/workflows/validate-deployment-scripts.yml'
+  pull_request:
+    paths:
+      - 'script/**'
+      - '.github/workflows/validate-deployment-scripts.yml'
 
-# permissions:
-#   contents: read
-#   pull-requests: read
+permissions:
+  contents: read
+  pull-requests: read
 
-# jobs:
+jobs:
 
-#   test:
-#     runs-on: protocol-x64-16core
-#     strategy:
-#       fail-fast: true
-#       matrix:
-#         env: [testnet-sepolia]
+  test:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       # Check out repository with all submodules for complete codebase access.
-#       - uses: actions/checkout@v4
-#         with:
-#           submodules: recursive
+    steps:
+      # Check out repository with all submodules for complete codebase access.
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-#       - name: Install Zeus
-#         run: npm install -g @layr-labs/zeus
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Install Zeus
+        run: npm install -g @layr-labs/zeus
       
-#         # Restore Forge cache
-#       - name: Cache Forge Build
-#         uses: actions/cache@v3
-#         with:
-#           path: |
-#             cache/
-#             out/
-#           key: ${{ runner.os }}-forge-${{ hashFiles('**/foundry.toml', '**/remappings.txt', 'src/**/*.sol', 'lib/**/*.sol') }}
-#           restore-keys: |
-#             ${{ runner.os }}-forge-
+        # Restore Forge cache
+      - name: Cache Forge Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            cache/
+            out/
+          key: ${{ runner.os }}-forge-${{ hashFiles('**/foundry.toml', '**/remappings.txt', 'src/**/*.sol', 'lib/**/*.sol') }}
+          restore-keys: |
+            ${{ runner.os }}-forge-
 
-#       # Install the Foundry toolchain.
-#       - name: Install Foundry
-#         uses: foundry-rs/foundry-toolchain@v1
-#         with:
-#           version: stable
+      # Install the Foundry toolchain.
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
 
-#       # Run Forge's formatting checker to ensure consistent code style.
-#       - name: "Forge Fmt"
-#         run: |
-#           forge fmt --check
-#           FOUNDRY_PROFILE=test forge fmt --check
-#         id: fmt
+      # Run Forge's formatting checker to ensure consistent code style.
+      - name: "Forge Fmt"
+        run: |
+          forge fmt --check
+          FOUNDRY_PROFILE=test forge fmt --check
+        id: fmt
 
-#       # Build the project and display contract sizes.
-#       - name: Forge Build
-#         run: |
-#           forge --version
-#           forge build --sizes
+      # Build the project and display contract sizes.
+      - name: Forge Build
+        run: |
+          forge --version
+          forge build --sizes
 
-#       - name: Validate Solidity Scripts
-#         run: |
-#           # Find all .sol files under /script/releases
-#           RELEASE_FILES=$(find script/releases -type f -name "*.sol" ! -name "Env.sol" 2>/dev/null || echo "")
+      - name: Validate Solidity Scripts
+        # TODO: Modify this step according to your deployment needs:
+        # 1. Add environment variables (ENVIRONMENT_TYPE, ZEUS_ENV_DEPLOYER, etc.) if your scripts require them
+        # 2. To test upgrade scripts, use actual deployed contract addresses from your testnet
+        # 3. Adjust the find command to include/exclude specific script patterns
+        # 4. Update the RPC URL secret name if different from RPC_SEPOLIA
+        env:
+          # Environment variables required for deployment script testing
+          ENVIRONMENT_TYPE: "test"
+          ZEUS_ENV_DEPLOYER: "0x39CA5312eF96cBF09c43ea7F2eAd639c539BF613"
+        run: |
+          # Find all .sol files under /script/releases excluding upgrade scripts
+          # TODO: Upgrade scripts are excluded because they require pre-deployed contracts
+          # To test upgrade scripts in CI, you need to either:
+          # 1. Deploy contracts first in the same CI run, or 
+          # 2. Use actual deployed contract addresses from your testnet
+          RELEASE_FILES=$(find script/releases -type f -name "*.sol" ! -name "Env.sol" ! -path "*/upgrade/*" ! -path "*/*upgrade*" 2>/dev/null || echo "")
           
-#           # Combine file lists
-#           FILES="$RELEASE_FILES"
+          # Combine file lists
+          FILES="$RELEASE_FILES"
           
-#           # Trim leading/trailing whitespace
-#           FILES=$(echo "$FILES" | xargs)
+          # Trim leading/trailing whitespace
+          FILES=$(echo "$FILES" | xargs)
           
-#           # Exit with success if no files are found
-#           if [ -z "$FILES" ]; then
-#             echo "No .sol files found under /script/releases directories"
-#             exit 0
-#           fi
+          # Exit with success if no files are found
+          if [ -z "$FILES" ]; then
+            echo "No .sol deployment files found under /script/releases directories (upgrade scripts excluded)"
+            exit 0
+          fi
           
-#           # Set RPC URL for testnet-sepolia environment
-#           RPC_URL="${{ secrets.RPC_SEPOLIA }}"
+          # Set RPC URL for testnet-sepolia environment
+          RPC_URL="${{ secrets.RPC_SEPOLIA }}"
           
-#           # Run zeus test on each file with the specified environment and RPC URL
-#           for file in $FILES; do
-#             echo "Testing $file in ${{ matrix.env }} environment with RPC $RPC_URL..."
-#             zeus test --env ${{ matrix.env }} --rpcUrl "$RPC_URL" "$file" 
-#           done
+          # Run zeus test on each file with the specified environment and RPC URL
+          for file in $FILES; do
+            echo "Testing $file in testnet-sepolia environment with RPC $RPC_URL..."
+            zeus test --env testnet-sepolia --rpcUrl "$RPC_URL" "$file" 
+          done

@@ -93,7 +93,7 @@ def handle_zeus_cleanup():
         remove_from_remapping('@zeus-templates/')
         remove_from_package_json('zeus-templates')
         remove_from_yarn_lock('zeus-templates')
-        remove_dir('.zeus')
+        remove_file('.zeus')
         remove_dir('script/releases')
         remove_from_env_example('ZEUS_ENV_DEPLOYER')
         print("Zeus cleanup completed")

@@ -1,0 +1,17 @@
+{
+    "project_name": "My Foundry Project",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "license": ["MIT", "Apache Software License 2.0", "BSD-3-Clause", "GPL-3.0", "UNLICENSED"],
+    "use_openzeppelin": ["y", "n"],
+    "use_openzeppelin_upgradeable": ["y", "n"],
+    "use_zeus": ["y", "n"],
+    "cleanup_demo": ["y", "n"],
+    "__prompts__": {
+        "project_name": "What is your project name?",
+        "license": "Choose a license for your project",
+        "use_openzeppelin": "Include OpenZeppelin contracts?",
+        "use_openzeppelin_upgradeable": "Include OpenZeppelin upgradeable contracts?",
+        "use_zeus": "Include Zeus toolkit?",
+        "cleanup_demo": "Remove demo/example files from template?"
+    }
+}

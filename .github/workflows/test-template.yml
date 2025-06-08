@@ -52,27 +52,27 @@ jobs:
           version: nightly
 
       - name: Install dependencies
-        working-directory: test_project
+        working-directory: testproject
         run: yarn install
 
       - name: Check Forge installation
-        working-directory: test_project
+        working-directory: testproject
         run: forge --version
 
       - name: Compile contracts
-        working-directory: test_project
+        working-directory: testproject
         run: forge build
 
       - name: Run tests
-        working-directory: test_project
+        working-directory: testproject
         run: forge test -vvv
 
       - name: Check code formatting
-        working-directory: test_project
+        working-directory: testproject
         run: forge fmt --check
 
       - name: Verify project structure
-        working-directory: test_project
+        working-directory: testproject
         run: |
           echo "Verifying generated project structure..."
           

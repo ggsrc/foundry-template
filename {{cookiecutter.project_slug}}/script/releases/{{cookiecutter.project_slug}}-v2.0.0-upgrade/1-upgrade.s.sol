@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity 0.8.30;
 
 import { EOADeployer } from "@zeus-templates/templates/EOADeployer.sol";
 import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";

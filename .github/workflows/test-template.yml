@@ -65,7 +65,7 @@ jobs:
 
       - name: Run tests
         working-directory: testproject
-        run: forge test -vvv
+        run: forge test --no-match-path "script/**" -vvv
 
       - name: Check code formatting
         working-directory: testproject

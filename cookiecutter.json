@@ -1,6 +1,7 @@
 {
     "project_name": "My Foundry Project",
     "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "contact_email": "",
     "license": ["MIT", "Apache Software License 2.0", "BSD-3-Clause", "GPL-3.0", "UNLICENSED"],
     "use_openzeppelin": ["y", "n"],
     "use_openzeppelin_upgradeable": ["y", "n"],
@@ -10,6 +11,7 @@
     "enable_auto_update": ["y", "n"],
     "__prompts__": {
         "project_name": "What is your project name?",
+        "contact_email": "Contact email for security reports (leave empty to skip SECURITY.md file)",
         "license": "Choose a license for your project",
         "use_openzeppelin": "Include OpenZeppelin contracts? (demo files may be unusable if not installed)",
         "use_openzeppelin_upgradeable": "Include OpenZeppelin upgradeable contracts? (demo files may be unusable if not installed)",

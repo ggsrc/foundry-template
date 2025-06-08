@@ -5,7 +5,7 @@
     "use_openzeppelin": ["y", "n"],
     "use_openzeppelin_upgradeable": ["y", "n"],
     "use_zeus": ["y", "n"],
-    "zeus_metadata_repo": "{% if cookiecutter.use_zeus == 'y' %}https://github.com/yourusername/your-metadata-repo{% endif %}",
+    "zeus_metadata_repo": "{% if cookiecutter.use_zeus == 'y' %}https://github.com/yourorgname/your-metadata-repo{% endif %}",
     "cleanup_demo": ["y", "n"],
     "__prompts__": {
         "project_name": "What is your project name?",

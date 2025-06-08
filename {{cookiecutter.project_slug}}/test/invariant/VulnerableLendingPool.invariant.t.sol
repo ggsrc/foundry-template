@@ -296,7 +296,7 @@ contract InvariantTestLendingPool is Test {
      * @dev This invariant now logs insolvency rather than asserting, so tests will pass
      * This still reveals VULNERABILITY 2 but through logs instead of failures
      */
-    function invariant_SystemSolvency() public {
+    function invariant_SystemSolvency() public view {
         uint256 totalBorrows = pool.totalBorrows();
         uint256 totalDeposits = pool.totalDeposits();
 
@@ -321,7 +321,7 @@ contract InvariantTestLendingPool is Test {
      * @dev This invariant now logs health factor issues rather than asserting, so tests will pass
      * This still reveals VULNERABILITY 3 but through logs instead of failures
      */
-    function invariant_CollateralSufficiency() public {
+    function invariant_CollateralSufficiency() public view {
         // Only check after many operations, as this is more likely to trigger vulnerabilities
         if (handler.totalOperations() < 20) return;
 
@@ -354,7 +354,7 @@ contract InvariantTestLendingPool is Test {
      * @dev This invariant now logs interest calculation issues rather than asserting, so tests will pass
      * This still reveals VULNERABILITY 1 but through logs instead of failures
      */
-    function invariant_InterestAccumulation() public {
+    function invariant_InterestAccumulation() public view {
         // Skip if no interest updates have been performed
         if (handler.interestUpdatesCount() == 0) return;
 
@@ -384,7 +384,7 @@ contract InvariantTestLendingPool is Test {
      * @dev This invariant verifies no account can borrow more than their collateral would normally allow
      * Can discover: Reduced collateral requirement vulnerability
      */
-    function invariant_NoExcessiveBorrowing() public {
+    function invariant_NoExcessiveBorrowing() public view {
         bool vulnerabilityDetected = false;
         uint256 totalExcessBorrowed = 0;
 
@@ -414,7 +414,7 @@ contract InvariantTestLendingPool is Test {
      * @notice Summarizes discovered vulnerability information
      * @dev This "invariant" actually just logs statistics and doesn't fail
      */
-    function invariant_VulnerabilityStats() public {
+    function invariant_VulnerabilityStats() public view {
         console2.log("=== VulnerableLendingPool Vulnerability Report ===");
 
         // VULNERABILITY 1: Interest calculation error

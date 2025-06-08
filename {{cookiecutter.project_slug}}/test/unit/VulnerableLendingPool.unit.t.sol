@@ -80,7 +80,7 @@ contract UnitTestLendingPool is Test {
         assertTrue(borrowBalance >= 10000 && borrowBalance < 10100, "Interest calculation is not behaving as expected");
     }
 
-    function test_ManualInterestCalculation_ExposesVulnerability() public {
+    function test_ManualInterestCalculation_ExposesVulnerability() public pure {
         console2.log("=== VULNERABILITY 1: Manual Interest Calculation Test ===");
         console2.log("Comparing correct vs buggy interest formulas directly");
 

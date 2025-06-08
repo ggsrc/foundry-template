@@ -146,6 +146,23 @@ def install_dependencies():
     else:
         print("No package.json found, skipping dependency installation")
 
+def git_init():
+    """Initialize git repository."""
+    try:
+        # Check if already a git repository
+        if os.path.exists('.git'):
+            print("Git repository already exists, skipping git init")
+            return
+        
+        print("Initializing git repository...")
+        subprocess.run(['git', 'init'], check=True, capture_output=True, text=True)
+        print("Git repository initialized successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to initialize git repository: {e}")
+        print("You can manually run 'git init' later")
+    except FileNotFoundError:
+        print("Git not found. Please install git or initialize repository manually")
+
 def main():
     """Main post-generation logic."""
     # Handle license
@@ -165,6 +182,9 @@ def main():
     
     # Install dependencies
     install_dependencies()
+    
+    # Initialize git repository
+    git_init()
     
     print(f"Project '{{cookiecutter.project_name}}' created successfully!")
 

@@ -1,20 +1,24 @@
 {
     "project_name": "My Foundry Project",
     "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "contact_email": "",
     "license": ["MIT", "Apache Software License 2.0", "BSD-3-Clause", "GPL-3.0", "UNLICENSED"],
     "use_openzeppelin": ["y", "n"],
     "use_openzeppelin_upgradeable": ["y", "n"],
     "use_zeus": ["y", "n"],
     "zeus_metadata_repo": "{% if cookiecutter.use_zeus == 'y' %}https://github.com/yourorgname/your-metadata-repo{% endif %}",
     "cleanup_demo": ["y", "n"],
+    "enable_auto_update": ["y", "n"],
     "__prompts__": {
         "project_name": "What is your project name?",
+        "contact_email": "Contact email for security reports (leave empty to skip SECURITY.md file)",
         "license": "Choose a license for your project",
         "use_openzeppelin": "Include OpenZeppelin contracts? (demo files may be unusable if not installed)",
         "use_openzeppelin_upgradeable": "Include OpenZeppelin upgradeable contracts? (demo files may be unusable if not installed)",
         "use_zeus": "Include Zeus toolkit for deployment? (tool for managing complex deploy processes for onchain software. More info: https://layr-labs.github.io/zeus/)",
         "zeus_metadata_repo": "{% if cookiecutter.use_zeus == 'y' %}GitHub repository URL for Zeus metadata storage (separate repo required for deployment records and configurations. Setup guide: https://layr-labs.github.io/zeus/getting-started/){% endif %}",
-        "cleanup_demo": "Remove demo/example files from template? (you can always remove them later)"
+        "cleanup_demo": "Remove demo/example files from template? (you can always remove them later)",
+        "enable_auto_update": "Enable automatic template updates? (will auto-detect template changes and create PRs to your project every Monday, but requires setting up a GitHub Personal Access Token named 'CICD_DOCKER_BUILD_PAT' in your repository secrets)"
     },
     "_copy_without_render": [
         ".github/**/*"

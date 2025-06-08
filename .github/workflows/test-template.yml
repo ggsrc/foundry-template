@@ -1,0 +1,110 @@
+name: Test Foundry Template
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: "foundry-template"
+
+      # Setup Python for cookiecutter
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install cookiecutter
+        run: pip install cookiecutter
+
+      # Generate full featured project (all dependencies enabled)
+      - name: Generate Test Project
+        run: |
+          cookiecutter foundry-template --no-input \
+            project_name="TestProject" \
+            contact_email="security@testproject.com" \
+            license="MIT" \
+            use_openzeppelin="y" \
+            use_openzeppelin_upgradeable="y" \
+            use_zeus="y" \
+            zeus_metadata_repo="https://github.com/test-org/test-metadata" \
+            cleanup_demo="n" \
+            enable_auto_update="y"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install dependencies
+        working-directory: testproject
+        run: yarn install
+
+      - name: Check Forge installation
+        working-directory: testproject
+        run: forge --version
+
+      - name: Compile contracts
+        working-directory: testproject
+        run: forge build
+
+      - name: Run tests
+        working-directory: testproject
+        run: forge test --no-match-path "script/**" -vvv
+
+      - name: Check code formatting
+        working-directory: testproject
+        run: forge fmt --check
+
+      - name: Verify project structure
+        working-directory: testproject
+        run: |
+          echo "Verifying generated project structure..."
+          
+          echo "✅ Checking essential files exist:"
+          test -f foundry.toml && echo "  - foundry.toml ✓"
+          test -f package.json && echo "  - package.json ✓"
+          test -f remappings.txt && echo "  - remappings.txt ✓"
+          test -f .zeus && echo "  - .zeus ✓"
+          test -f SECURITY.md && echo "  - SECURITY.md ✓"
+          
+          echo "✅ Checking directories exist:"
+          test -d src && echo "  - src/ ✓"
+          test -d test && echo "  - test/ ✓"
+          test -d script && echo "  - script/ ✓"
+          test -d script/releases && echo "  - script/releases/ ✓"
+          
+          echo "✅ Checking dependencies in package.json:"
+          grep -q "@openzeppelin/contracts" package.json && echo "  - OpenZeppelin contracts ✓"
+          grep -q "@openzeppelin/contracts-upgradeable" package.json && echo "  - OpenZeppelin upgradeable ✓"
+          grep -q "zeus-templates" package.json && echo "  - Zeus templates ✓"
+          
+          echo "✅ Checking remappings:"
+          grep -q "@openzeppelin/" remappings.txt && echo "  - OpenZeppelin remapping ✓"
+          grep -q "@openzeppelin-upgrades/" remappings.txt && echo "  - OpenZeppelin upgradeable remapping ✓"
+          grep -q "@zeus-templates/" remappings.txt && echo "  - Zeus remapping ✓"
+          
+          echo "✅ Checking Zeus configuration:"
+          grep -q "test-org/test-metadata" .zeus && echo "  - Zeus metadata repo ✓"
+          
+          echo "✅ Checking SECURITY.md content:"
+          grep -q "security@testproject.com" SECURITY.md && echo "  - Contact email ✓"
+          grep -q "TestProject" SECURITY.md && echo "  - Project name ✓"
+          
+          echo ""
+          echo "✅ Template verification completed successfully!" 

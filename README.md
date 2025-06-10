@@ -96,27 +96,62 @@ See the [Tenderly Integration Guide]({{cookiecutter.project_slug}}/docs/TENDERLY
 
 ## Security
 
-The template includes two static analysis tools for comprehensive security auditing:
+The template includes three static analysis tools for comprehensive security auditing. **All tools support automatic installation** - simply run the make commands and they will be installed automatically if not already present.
 
 ### Slither
-**Slither** is Trail of Bits' static analysis framework for Solidity.
-
-**Installation**: If not already installed, visit the [official Slither repository](https://github.com/crytic/slither) for installation instructions.
+**Slither** is Trail of Bits' static analysis framework for Solidity that detects vulnerabilities through static code analysis.
 
 **Usage**:
 ```bash
 make slither
 ```
 
+Slither automatically detects and reports:
+- **Reentrancy vulnerabilities** - Functions vulnerable to reentrancy attacks
+- **Access control issues** - Missing or incorrect access control mechanisms
+- **Timestamp dependence** - Reliance on block.timestamp for critical logic
+- **Unchecked external calls** - External calls without proper error handling
+- **Integer overflow/underflow** - Arithmetic operations without safe math
+
+**More info**: [Slither Documentation](https://github.com/crytic/slither) | [Detection Capabilities](https://github.com/crytic/slither#detectors)
+
+### Mythril
+**Mythril** is a security analysis tool that uses symbolic execution to detect complex vulnerabilities in Ethereum smart contracts.
+
+**Usage**:
+```bash
+make mythril
+```
+
+Mythril excels at finding:
+- **Reentrancy vulnerabilities** - Complex attack patterns across multiple transactions
+- **Integer overflow/underflow** - Mathematical operation vulnerabilities  
+- **Unprotected functions** - Access control bypasses
+- **State manipulation** - Unexpected state changes
+- **Call injection** - Dangerous external calls
+
+**More info**: [Mythril Documentation](https://github.com/ConsenSys/mythril) | [Security Analysis Guide](https://mythril-classic.readthedocs.io/)
+
 ### 4naly3er
-**4naly3er** is another static audit tool that provides complementary analysis.
+**4naly3er** is a static audit tool that provides complementary analysis with different detection algorithms.
 
 **Usage**:
 ```bash
 make 4naly3er
 ```
 
-This will generate a comprehensive audit report in the `audit/` folder, providing detailed analysis of potential vulnerabilities and code quality issues.
+**More info**: [4naly3er Repository](https://github.com/Picodes/4naly3er) | [Usage Examples](https://github.com/Picodes/4naly3er#usage)
+
+### Comprehensive Security Audit
+Run all three security tools at once for complete coverage:
+
+```bash
+make audit
+```
+
+All tools automatically generate timestamped reports in the `audit/` directory, including both JSON and Markdown formats for detailed analysis and documentation.
+
+**Note**: All security tools will be automatically installed via pip when first run. No manual installation required!
 
 ## Linting
 
@@ -191,25 +226,20 @@ If you enabled auto-updates during template creation, follow these steps to conf
 4. Click **"Generate token"**
 5. **Copy the token immediately** (you won't be able to see it again)
 
-#### 2. Add Secret to Repository Settings
+#### 2. Add Secret to Repository
 
-Choose one of the following approaches:
+Choose your preferred method:
 
-**Option A: Repository-level secret (single repo)**
+**Option A: Using GitHub CLI (Recommended)**
+```bash
+# Set the secret using gh command
+gh secret set CICD_DOCKER_BUILD_PAT --body "your_token_here"
+```
+
+**Option B: GitHub Web Interface**
 1. Go to your repository → **Settings** → **Secrets and variables** → **Actions**
 2. Click **"New repository secret"**
-3. Set:
-   - **Name**: `CICD_DOCKER_BUILD_PAT`
-   - **Secret**: Paste your GitHub token
-4. Click **"Add secret"**
-
-**Option B: Organization-level secret (recommended for multiple repos)**
-1. Go to your GitHub organization → **Settings** → **Secrets and variables** → **Actions**
-2. Click **"New organization secret"**
-3. Set:
-   - **Name**: `CICD_DOCKER_BUILD_PAT`
-   - **Secret**: Paste your GitHub token
-   - **Repository access**: Select repositories that should have access
+3. Set **Name**: `CICD_DOCKER_BUILD_PAT` and **Secret**: your token
 4. Click **"Add secret"**
 
 #### 3. Test the Workflow
@@ -223,6 +253,7 @@ The workflow will then run automatically every Monday at 2:00 AM UTC to check fo
 - **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
 
 These workflows provide automated testing, security scanning, and deployment validation to ensure code quality and reliability throughout the development process.
+
 
 
 # Contributing

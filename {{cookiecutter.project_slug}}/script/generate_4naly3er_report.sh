@@ -77,19 +77,14 @@ fi
 if [ -f "$ANALYZER_DIR/report.md" ]; then
   # Get current timestamp as part of the filename
   TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-  REPORT_FILENAME="audit_report_$TIMESTAMP.md"
+  REPORT_FILENAME="4naly3er_report_$TIMESTAMP.md"
   
   # Copy report to audit directory
   echo -e "${GREEN}Copying report to $AUDIT_DIR/$REPORT_FILENAME${NC}"
   cp "$ANALYZER_DIR/report.md" "$AUDIT_DIR/$REPORT_FILENAME"
   
-  # Create symbolic link to latest report
-  echo -e "${YELLOW}Creating symbolic link to latest report...${NC}"
-  ln -sf "$REPORT_FILENAME" "$AUDIT_DIR/latest_audit_report.md"
-  
-  echo -e "${GREEN}Success! Audit report generated at:${NC}"
+  echo -e "${GREEN}Success! 4naly3er report generated at:${NC}"
   echo -e "${BLUE}$AUDIT_DIR/$REPORT_FILENAME${NC}"
-  echo -e "${BLUE}$AUDIT_DIR/latest_audit_report.md${NC} (symlink to latest report)"
 else
   echo -e "${RED}Error: Report not generated. Check 4naly3er logs for details.${NC}"
   exit 1

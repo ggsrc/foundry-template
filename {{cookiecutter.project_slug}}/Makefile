@@ -1,4 +1,4 @@
-.PHONY: help format format-check lint lint-fix slither audit cleanup-demo
+.PHONY: help format format-check lint lint-fix slither mythril 4naly3er audit cleanup-demo
 
 # Set default target to help
 .DEFAULT_GOAL := help
@@ -18,15 +18,33 @@ lint-fix: ## Fix automatically fixable Solhint issues
 	@echo "Fixing linting issues in Solidity files..."
 	@npx solhint $(SOL_FILES) --fix || yarn solhint $(SOL_FILES) --fix
 
-slither: ## Run Slither security analysis
+slither: ## Run Slither security analysis on all contracts
+	@echo "Ensuring Slither script is executable..."
+	@chmod +x script/generate_slither_report.sh
 	@echo "Running Slither security analysis..."
-	@slither . --config-file slither.config.json
+	@./script/generate_slither_report.sh
+
+mythril: ## Run Mythril security analysis on all contracts
+	@echo "Ensuring Mythril script is executable..."
+	@chmod +x script/generate_mythril_report.sh
+	@echo "Running Mythril security analysis..."
+	@./script/generate_mythril_report.sh
 
 4naly3er: ## Generate smart contract audit report with 4naly3er
 	@echo "Ensuring script is executable..."
 	@chmod +x script/generate_4naly3er_report.sh
 	@echo "Generating audit report..."
 	@./script/generate_4naly3er_report.sh
+
+audit: ## Run all security analysis tools (Slither, Mythril, 4naly3er)
+	@echo "Running comprehensive security audit..."
+	@make slither
+	@echo ""
+	@make mythril
+	@echo ""
+	@make 4naly3er
+	@echo ""
+	@echo "Security audit complete! Check the audit/ directory for reports."
 
 cleanup-demo: ## Clean up demo files from project directories
 	@echo "Ensuring cleanup script is executable..."

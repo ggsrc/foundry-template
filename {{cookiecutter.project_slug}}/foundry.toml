@@ -22,3 +22,8 @@ func_attrs_with_params_multiline = true
 quote_style = 'double'
 number_underscore = 'preserve'
 multiline_func_header = 'params_first'
+
+[etherscan]
+ 
+## placeholders must be replaced with key ("string"), chain_id (number, non-quoted), and tenderly_foundry_verification_url ("string")
+unknown_chain = { key = "$TENDERLY_ACCESS_KEY", chain = 0, url = "$TENDERLY_FOUNDRY_VERIFICATION_URL" }

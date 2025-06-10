@@ -1,4 +1,4 @@
-.PHONY: help format format-check lint lint-fix slither mythril 4naly3er audit cleanup-demo
+.PHONY: help format format-check lint lint-fix slither mythril 4naly3er aderyn audit cleanup-demo
 
 # Set default target to help
 .DEFAULT_GOAL := help
@@ -36,13 +36,21 @@ mythril: ## Run Mythril security analysis on all contracts
 	@echo "Generating audit report..."
 	@./script/generate_4naly3er_report.sh
 
-audit: ## Run all security analysis tools (Slither, Mythril, 4naly3er)
+aderyn: ## Run Aderyn static analysis on all contracts
+	@echo "Ensuring Aderyn script is executable..."
+	@chmod +x script/generate_aderyn_report.sh
+	@echo "Running Aderyn static analysis..."
+	@./script/generate_aderyn_report.sh
+
+audit: ## Run all security analysis tools (Slither, Mythril, 4naly3er, Aderyn)
 	@echo "Running comprehensive security audit..."
 	@make slither
 	@echo ""
 	@make mythril
 	@echo ""
 	@make 4naly3er
+	@echo ""
+	@make aderyn
 	@echo ""
 	@echo "Security audit complete! Check the audit/ directory for reports."
 

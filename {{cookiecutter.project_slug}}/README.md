@@ -96,7 +96,7 @@ See the [Tenderly Integration Guide]({{cookiecutter.project_slug}}/docs/TENDERLY
 
 ## Security
 
-The template includes three static analysis tools for comprehensive security auditing. **All tools support automatic installation** - simply run the make commands and they will be installed automatically if not already present.
+The template includes four static analysis tools for comprehensive security auditing. **All tools support automatic installation** - simply run the make commands and they will be installed automatically if not already present.
 
 ### Slither
 **Slither** is Trail of Bits' static analysis framework for Solidity that detects vulnerabilities through static code analysis.
@@ -142,8 +142,25 @@ make 4naly3er
 
 **More info**: [4naly3er Repository](https://github.com/Picodes/4naly3er) | [Usage Examples](https://github.com/Picodes/4naly3er#usage)
 
+### Aderyn
+**Aderyn** is a modern Rust-based Solidity static analyzer by Cyfrin that offers zero-configuration setup and fast performance.
+
+**Usage**:
+```bash
+make aderyn
+```
+
+Aderyn automatically detects and reports:
+- **Modern vulnerability patterns** - Up-to-date detection algorithms
+- **Zero configuration required** - Works out of the box with Foundry and Hardhat
+- **High performance** - Rust-based implementation for fast analysis
+- **Editor integration** - VSCode extension available for real-time feedback
+- **Multiple output formats** - Markdown, JSON, and SARIF reports
+
+**More info**: [Aderyn Documentation](https://cyfrin.gitbook.io/cyfrin-docs/aderyn-cli/readme) | [GitHub Repository](https://github.com/Cyfrin/aderyn)
+
 ### Comprehensive Security Audit
-Run all three security tools at once for complete coverage:
+Run all four security tools at once for complete coverage:
 
 ```bash
 make audit
@@ -151,7 +168,7 @@ make audit
 
 All tools automatically generate timestamped reports in the `audit/` directory, including both JSON and Markdown formats for detailed analysis and documentation.
 
-**Note**: All security tools will be automatically installed via pip when first run. No manual installation required!
+**Note**: All security tools will be automatically installed when first run. No manual installation required!
 
 ## Linting
 

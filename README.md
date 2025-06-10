@@ -41,7 +41,7 @@ forge build
 
 # Modules
 
-## Module 1: Testing
+## Testing
 
 We've specially designed a vulnerable contract in `{{cookiecutter.project_slug}}/src/VulnerableLendingPool.sol` for educational purposes. This contract contains intentional vulnerabilities that are revealed through different testing strategies:
 
@@ -54,7 +54,7 @@ Each testing approach exposes different types of vulnerabilities in the contract
 **For detailed vulnerability analysis and testing strategies, see:**
 👉 [Testing Strategy & Vulnerability Analysis]({{cookiecutter.project_slug}}/test/README.md)
 
-## Module 2: Deployment
+## Deployment
 
 The template supports two deployment strategies:
 
@@ -77,7 +77,7 @@ If you selected Zeus during template creation, you get access to advanced deploy
 
 See the [Deployment Guide]({{cookiecutter.project_slug}}/script/releases/README.md) for detailed Zeus usage instructions.
 
-## Module 3: Security
+## Security
 
 The template includes two static analysis tools for comprehensive security auditing:
 
@@ -101,7 +101,7 @@ make 4naly3er
 
 This will generate a comprehensive audit report in the `audit/` folder, providing detailed analysis of potential vulnerabilities and code quality issues.
 
-## Module 4: Linting
+## Linting
 
 The template includes automated code quality tools to maintain consistent code style and catch common issues:
 
@@ -120,7 +120,7 @@ The linting rules are configured in `.solhint.json` and help enforce:
 - **Gas optimization hints** - Suggestions for gas-efficient code
 - **Security patterns** - Basic security-related code patterns
 
-## Module 5: Demo Files
+## Demo Files
 
 The template comes with educational demo files to help you understand smart contract development patterns:
 
@@ -144,7 +144,7 @@ This command will:
 
 **Note**: You can also choose to exclude demo files during template creation by answering "y" to the `cleanup_demo` prompt.
 
-## Module 6: GitHub Workflows
+## GitHub Workflows
 
 The template includes several pre-configured GitHub Actions workflows located in `{{cookiecutter.project_slug}}/.github/workflows/`:
 
@@ -154,9 +154,58 @@ The template includes several pre-configured GitHub Actions workflows located in
 
 ### Conditional Workflows
 - **`cruft-update.yml`** - Automatic template updates (only included if auto-update is enabled during template creation)
+
+### Setting up Automatic Template Updates
+
+If you enabled auto-updates during template creation, follow these steps to configure the required GitHub secret:
+
+#### 1. Generate GitHub Personal Access Token (PAT)
+
+1. Go to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
+2. Click **"Generate new token"** → **"Generate new token (classic)"**
+3. Configure the token:
+   - **Note**: `CICD_DOCKER_BUILD_PAT for template updates`
+   - **Expiration**: Choose appropriate duration (recommended: 90 days or 1 year)
+   - **Scopes**: Select the following permissions:
+     - ✅ `repo` (Full control of private repositories)
+     - ✅ `workflow` (Update GitHub Action workflows)
+     - ✅ `write:packages` (Write packages to GitHub Package Registry)
+4. Click **"Generate token"**
+5. **Copy the token immediately** (you won't be able to see it again)
+
+#### 2. Add Secret to Repository Settings
+
+Choose one of the following approaches:
+
+**Option A: Repository-level secret (single repo)**
+1. Go to your repository → **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New repository secret"**
+3. Set:
+   - **Name**: `CICD_DOCKER_BUILD_PAT`
+   - **Secret**: Paste your GitHub token
+4. Click **"Add secret"**
+
+**Option B: Organization-level secret (recommended for multiple repos)**
+1. Go to your GitHub organization → **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New organization secret"**
+3. Set:
+   - **Name**: `CICD_DOCKER_BUILD_PAT`
+   - **Secret**: Paste your GitHub token
+   - **Repository access**: Select repositories that should have access
+4. Click **"Add secret"**
+
+#### 3. Test the Workflow
+
+1. Go to your repository → **Actions** tab
+2. Find **"Update repository Template"** workflow
+3. Click **"Run workflow"** → **"Run workflow"** (manually trigger)
+4. Monitor the workflow execution to ensure it works correctly
+
+The workflow will then run automatically every Monday at 2:00 AM UTC to check for template updates.
 - **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
 
 These workflows provide automated testing, security scanning, and deployment validation to ensure code quality and reliability throughout the development process.
+
 
 # Contributing
 

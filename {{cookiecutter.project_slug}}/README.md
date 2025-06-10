@@ -1,82 +1,207 @@
-## instructions
+# Foundry Template
 
-TODO: install prettier extension
+A Foundry project generator for your next smart contract project 🚀
 
-## security tools
+## Getting Started
 
-### slither
+### Requirements
 
-```
-   # use pip to install
-   pip3 install slither-analyzer
+Please install the following:
 
-   # or use docker
-   docker pull trailofbits/eth-security-toolbox
-```
+- **Git**
+  - You'll know you've done it right if you can run `git --version`
+- **Foundry / Foundryup**
+  - You can test you've installed them right by running `forge --version` and get an output like: `forge 0.3.0 (f016135 2022-07-04T00:15:02.930499Z)`
+  - To get the latest of each, just run `foundryup`
+- **Cruft** (Project Template Tool)
+  - **macOS**: `brew install cruft` 
+  - **Other platforms**: `pip install cruft`
+- **Make** (Build Tool)
+  - Usually pre-installed on macOS/Linux
+  - **Windows**: Install via [chocolatey](https://chocolatey.org/): `choco install make`
 
-## Foundry
+### Quickstart
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+```bash
+# Install cruft (if you haven't already)
+# macOS:
+brew install cruft
+# Other platforms:
+pip install cruft
 
-Foundry consists of:
+# Create a new project from the template
+cruft create https://github.com/ggsrc/foundry-template
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+# Navigate to your new project directory
+cd your-project-name
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
+# Build the contracts
+forge build
 ```
 
-### Format
+# Modules
 
-```shell
-$ forge fmt
+## Testing
+
+We've specially designed a vulnerable contract in `{{cookiecutter.project_slug}}/src/VulnerableLendingPool.sol` for educational purposes. This contract contains intentional vulnerabilities that are revealed through different testing strategies:
+
+- **Unit Tests** (`test/unit/`) - Test individual functions and reveal basic logic flaws
+- **Fuzz Tests** (`test/fuzz/`) - Use random inputs to discover edge cases and input validation issues  
+- **Invariant Tests** (`test/invariant/`) - Test system-wide properties to uncover complex vulnerabilities like reentrancy and state inconsistencies
+
+Each testing approach exposes different types of vulnerabilities in the contract, making it an excellent learning resource for smart contract security.
+
+**For detailed vulnerability analysis and testing strategies, see:**
+👉 [Testing Strategy & Vulnerability Analysis]({{cookiecutter.project_slug}}/test/README.md)
+
+## Deployment
+
+The template supports two deployment strategies:
+
+### Native Forge Deployment
+If you choose not to use Zeus during template creation, you can deploy contracts using Foundry's native methods:
+
+```bash
+forge script script/Deploy.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
 ```
 
-### Gas Snapshots
+For more information, consult the [Foundry Book](https://book.getfoundry.sh/).
 
-```shell
-$ forge snapshot
+### Zeus Deployment
+If you selected Zeus during template creation, you get access to advanced deployment features:
+
+- **Complex deployment orchestration** with dependency management
+- **Deployment metadata tracking** for better project management
+- **Multi-environment support** with consistent deployment patterns
+- **Upgrade management** for proxy contracts
+
+See the [Deployment Guide]({{cookiecutter.project_slug}}/script/releases/README.md) for detailed Zeus usage instructions.
+
+## Security
+
+The template includes two static analysis tools for comprehensive security auditing:
+
+### Slither
+**Slither** is Trail of Bits' static analysis framework for Solidity.
+
+**Installation**: If not already installed, visit the [official Slither repository](https://github.com/crytic/slither) for installation instructions.
+
+**Usage**:
+```bash
+make slither
 ```
 
-### Anvil
+### 4naly3er
+**4naly3er** is another static audit tool that provides complementary analysis.
 
-```shell
-$ anvil
+**Usage**:
+```bash
+make 4naly3er
 ```
 
-### Deploy
+This will generate a comprehensive audit report in the `audit/` folder, providing detailed analysis of potential vulnerabilities and code quality issues.
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+## Linting
+
+The template includes automated code quality tools to maintain consistent code style and catch common issues:
+
+### Solidity Linting
+**Solhint** is integrated for Solidity code style and quality checking.
+
+**Usage**:
+```bash
+make lint      # Check for linting issues
+make lint-fix  # Automatically fix linting issues where possible
 ```
 
-### Cast
+The linting rules are configured in `.solhint.json` and help enforce:
+- **Code style consistency** - Consistent formatting and naming conventions
+- **Best practices** - Common Solidity patterns and anti-patterns
+- **Gas optimization hints** - Suggestions for gas-efficient code
+- **Security patterns** - Basic security-related code patterns
 
-```shell
-$ cast <subcommand>
+## Demo Files
+
+The template comes with educational demo files to help you understand smart contract development patterns:
+
+### Included Demo Files
+- **`src/Counter.sol`** - Simple counter contract demonstrating basic state management
+- **`src/CounterV2.sol`** - Upgraded version showing contract upgrade patterns
+- **`src/VulnerableLendingPool.sol`** - Educational contract with intentional vulnerabilities
+- **Sample test files** - Testing examples for all demo contracts
+- **Deployment scripts** - Zeus deployment examples
+
+### Managing Demo Files
+You can easily remove all demo files when you're ready to start your own project:
+
+```bash
+make cleanup-demo
 ```
 
-### Help
+This command will:
+- Remove all demo files
+- Keep the project structure intact for your own contracts
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+**Note**: You can also choose to exclude demo files during template creation by answering "y" to the `cleanup_demo` prompt.
+
+## GitHub Workflows
+
+The template includes several pre-configured GitHub Actions workflows located in `{{cookiecutter.project_slug}}/.github/workflows/`:
+
+### Core Workflows
+- **`test-template.yml`** - Runs comprehensive testing on every commit
+- **`ci.yml`** - Continuous integration for contract compilation and testing
+
+### Conditional Workflows
+- **`cruft-update.yml`** - Automatic template updates (only included if auto-update is enabled during template creation)
+
+### Setting up Automatic Template Updates
+
+If you enabled auto-updates during template creation, follow these steps to configure the required GitHub secret:
+
+#### 1. Generate GitHub Personal Access Token (PAT)
+
+1. Go to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
+2. Click **"Generate new token"** → **"Generate new token (classic)"**
+3. Configure the token:
+   - **Note**: `CICD_DOCKER_BUILD_PAT for template updates`
+   - **Expiration**: Choose appropriate duration (recommended: 90 days or 1 year)
+   - **Scopes**: Select the following permissions:
+     - ✅ `repo` (Full control of private repositories)
+     - ✅ `workflow` (Update GitHub Action workflows)
+     - ✅ `write:packages` (Write packages to GitHub Package Registry)
+4. Click **"Generate token"**
+5. **Copy the token immediately** (you won't be able to see it again)
+
+#### 2. Add Secret to Repository Settings
+
+Choose one of the following approaches:
+
+**Option A: Repository-level secret (single repo)**
+1. Go to your repository → **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New repository secret"**
+3. Set:
+   - **Name**: `CICD_DOCKER_BUILD_PAT`
+   - **Secret**: Paste your GitHub token
+4. Click **"Add secret"**
+
+**Option B: Organization-level secret (recommended for multiple repos)**
+1. Go to your GitHub organization → **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New organization secret"**
+3. Set:
+   - **Name**: `CICD_DOCKER_BUILD_PAT`
+   - **Secret**: Paste your GitHub token
+   - **Repository access**: Select repositories that should have access
+4. Click **"Add secret"**
+
+#### 3. Test the Workflow
+
+1. Go to your repository → **Actions** tab
+2. Find **"Update repository Template"** workflow
+3. Click **"Run workflow"** → **"Run workflow"** (manually trigger)
+4. Monitor the workflow execution to ensure it works correctly
+
+The workflow will then run automatically every Monday at 2:00 AM UTC to check for template updates.
+- **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
+
+These workflows provide automated testing, security scanning, and deployment validation to ensure code quality and reliability throughout the development process.

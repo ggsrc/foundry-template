@@ -1,173 +1,163 @@
-# foundry-template
+# Foundry Template
 
-A bleeding-edge Foundry project generator for your next smart contract project 🚀
+A Foundry project generator for your next smart contract project 🚀
 
-## TL;DR
+## Getting Started
+
+### Requirements
+
+Please install the following:
+
+- **Git**
+  - You'll know you've done it right if you can run `git --version`
+- **Foundry / Foundryup**
+  - You can test you've installed them right by running `forge --version` and get an output like: `forge 0.3.0 (f016135 2022-07-04T00:15:02.930499Z)`
+  - To get the latest of each, just run `foundryup`
+- **Cruft** (Project Template Tool)
+  - **macOS**: `brew install cruft` 
+  - **Other platforms**: `pip install cruft`
+- **Make** (Build Tool)
+  - Usually pre-installed on macOS/Linux
+  - **Windows**: Install via [chocolatey](https://chocolatey.org/): `choco install make`
+
+### Quickstart
 
 ```bash
+# Install cruft (if you haven't already)
+# macOS:
+brew install cruft
+# Other platforms:
 pip install cruft
-cruft create https://github.com/your-org/foundry-template
+
+# Create a new project from the template
+cruft create https://github.com/ggsrc/foundry-template
+
+# Navigate to your new project directory
+cd your-project-name
+
+# Build the contracts
+forge build
 ```
 
-**OR**
+# Modules
+
+## Module 1: Testing
+
+We've specially designed a vulnerable contract in `{{cookiecutter.project_slug}}/src/VulnerableLendingPool.sol` for educational purposes. This contract contains intentional vulnerabilities that are revealed through different testing strategies:
+
+- **Unit Tests** (`test/unit/`) - Test individual functions and reveal basic logic flaws
+- **Fuzz Tests** (`test/fuzz/`) - Use random inputs to discover edge cases and input validation issues  
+- **Invariant Tests** (`test/invariant/`) - Test system-wide properties to uncover complex vulnerabilities like reentrancy and state inconsistencies
+
+Each testing approach exposes different types of vulnerabilities in the contract, making it an excellent learning resource for smart contract security.
+
+**For detailed vulnerability analysis and testing strategies, see:**
+👉 [Testing Strategy & Vulnerability Analysis]({{cookiecutter.project_slug}}/test/README.md)
+
+## Module 2: Deployment
+
+The template supports two deployment strategies:
+
+### Native Forge Deployment
+If you choose not to use Zeus during template creation, you can deploy contracts using Foundry's native methods:
 
 ```bash
-pip install cookiecutter
-cookiecutter https://github.com/your-org/foundry-template
+forge script script/Deploy.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
 ```
 
-## 💥 Features
+For more information, consult the [Foundry Book](https://book.getfoundry.sh/).
 
-This is a batteries-included cookiecutter 🍪 template to get you started with the essentials you'll need for your next Solidity project 😉
+### Zeus Deployment
+If you selected Zeus during template creation, you get access to advanced deployment features:
 
-### Development
-- **Foundry toolkit** - Complete development environment with forge, cast, and anvil
-- **Automated code formatting** with `forge fmt` and consistent style configuration
-- **Smart contract linting** with Solhint, complete with a ready-to-run `.solhint.json` configuration
-- **Security analysis** with Slither integration for vulnerability detection
-- **Multiple testing strategies** - Unit tests, fuzz testing, and invariant testing examples
-- **Easy setup with Makefile** - run tests, linters, security checks, and generate reports with a single command
-- **Demo vulnerability contracts** - Learn from intentional vulnerabilities (VulnerableLendingPool) for security education
-- **OpenZeppelin integration** - Optional integration with battle-tested smart contract libraries
-- **Gas optimization** - Built-in gas reporting and optimization configurations
+- **Complex deployment orchestration** with dependency management
+- **Deployment metadata tracking** for better project management
+- **Multi-environment support** with consistent deployment patterns
+- **Upgrade management** for proxy contracts
 
-### Deployment & DevOps
-- **GitHub Actions** with predefined workflows including CI/CD, testing, and deployment validation
-- **Zeus deployment toolkit** - Optional integration for complex deployment processes (EigenLayer's tool)
-- **Automated template updates** with cruft - keep your project in sync with template improvements
-- **Security reporting workflow** - Configured vulnerability disclosure process
-- **Deployment script validation** - Automatic testing of deployment scripts before production
-- **Multi-environment support** - Ready configurations for testnets and mainnet
+See the [Deployment Guide]({{cookiecutter.project_slug}}/script/releases/README.md) for detailed Zeus usage instructions.
 
-### Project Structure
-- **Organized directory structure** - Clear separation of contracts, tests, scripts, and documentation
-- **Comprehensive `.gitignore`** and `.gitattributes` - You won't have to bother with trivialities
-- **License templates** - Choose from MIT, Apache 2.0, BSD-3-Clause, GPL-3.0, or UNLICENSED
-- **Professional documentation** - README templates, security policies, and contribution guidelines
+## Module 3: Security
 
-## 📦 Quick Start
+The template includes two static analysis tools for comprehensive security auditing:
 
-### Option 1: Using Cruft (Recommended)
+### Slither
+**Slither** is Trail of Bits' static analysis framework for Solidity.
+
+**Installation**: If not already installed, visit the [official Slither repository](https://github.com/crytic/slither) for installation instructions.
+
+**Usage**:
 ```bash
-pip install cruft
-cruft create https://github.com/your-org/foundry-template
+make slither
 ```
-✅ Supports automatic template updates  
-✅ Tracks template version
 
-### Option 2: Using Cookiecutter
+### 4naly3er
+**4naly3er** is another static audit tool that provides complementary analysis.
+
+**Usage**:
 ```bash
-pip install cookiecutter  
-cookiecutter https://github.com/your-org/foundry-template
-```
-✅ Simple and direct  
-❌ No template update support
-
-## 🎛️ Input Variables
-
-Cookiecutter will ask you to fill some variables that will be used to generate your project from this template. This section lists all the input variables, their default values, and what they are used for.
-
-**Quick Note:** Cookiecutter needs all inputs to have a default value. These defaults should be filled with actual values during the setup!
-
-| Parameter | Default Value | Usage |
-|-----------|---------------|-------|
-| `project_name` | "My Foundry Project" | Name of the project. A directory will be created with this name (converted to snake_case) |
-| `contact_email` | "" | Email for security reports and project inquiries. Leave empty to exclude security reporting |
-| `license` | "MIT" | Choose from MIT, Apache 2.0, BSD-3-Clause, GPL-3.0, or UNLICENSED |
-| `use_openzeppelin` | "y" | Include OpenZeppelin contracts library (y/n) |
-| `use_openzeppelin_upgradeable` | "y" | Include OpenZeppelin upgradeable contracts (y/n) |
-| `use_zeus` | "y" | Include Zeus deployment toolkit (y/n) |
-| `zeus_metadata_repo` | "" | GitHub repository for Zeus metadata storage (required if using Zeus) |
-| `cleanup_demo` | "y" | Remove demo/example files from template (y/n) |
-| `enable_auto_update` | "y" | Enable automatic template updates via GitHub Actions (y/n) |
-
-**Important:** If you enable auto-updates, you'll need to set up a GitHub Personal Access Token named `CICD_DOCKER_BUILD_PAT` in your repository secrets.
-
-## 🛠️ What You Get
-
-After running the template, you'll have a complete Foundry project with:
-
-```
-your-project/
-├── src/                          # Smart contracts
-│   ├── Counter.sol              # Simple example contract
-│   ├── CounterV2.sol            # Upgrade example
-│   └── VulnerableLendingPool.sol # Educational vulnerability examples
-├── test/                         # Comprehensive testing suite
-│   ├── unit/                    # Unit tests
-│   ├── fuzz/                    # Fuzz testing
-│   └── invariant/               # Invariant testing
-├── script/                       # Deployment and utility scripts
-├── .github/workflows/           # CI/CD automation
-├── foundry.toml                 # Foundry configuration
-├── remappings.txt              # Import remappings
-├── package.json                # Node.js dependencies
-└── SECURITY.md                 # Security vulnerability reporting
+make 4naly3er
 ```
 
-## 🔒 Security Features
+This will generate a comprehensive audit report in the `audit/` folder, providing detailed analysis of potential vulnerabilities and code quality issues.
 
-- **Vulnerability disclosure process** - Professional security reporting workflow
-- **Educational vulnerability examples** - Learn from intentional security flaws
-- **Automated security scanning** - Slither integration for vulnerability detection
-- **Security best practices** - Pre-configured tools and workflows
+## Module 4: Linting
 
-## 🚀 Getting Started After Generation
+The template includes automated code quality tools to maintain consistent code style and catch common issues:
 
-1. **Install dependencies:**
-   ```bash
-   cd your-project
-   yarn install  # Node.js dependencies
-   forge build   # Compile contracts
-   ```
+### Solidity Linting
+**Solhint** is integrated for Solidity code style and quality checking.
 
-2. **Run tests:**
-   ```bash
-   forge test -vvv
-   ```
+**Usage**:
+```bash
+make lint      # Check for linting issues
+make lint-fix  # Automatically fix linting issues where possible
+```
 
-3. **Security analysis:**
-   ```bash
-   slither src/
-   ```
+The linting rules are configured in `.solhint.json` and help enforce:
+- **Code style consistency** - Consistent formatting and naming conventions
+- **Best practices** - Common Solidity patterns and anti-patterns
+- **Gas optimization hints** - Suggestions for gas-efficient code
+- **Security patterns** - Basic security-related code patterns
 
-4. **Deploy (example):**
-   ```bash
-   forge script script/Deploy.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key>
-   ```
+## Module 5: Demo Files
 
-## 🔄 Template Updates
+The template comes with educational demo files to help you understand smart contract development patterns:
 
-If you used `cruft create`, you can update your project when the template improves:
+### Included Demo Files
+- **`src/Counter.sol`** - Simple counter contract demonstrating basic state management
+- **`src/CounterV2.sol`** - Upgraded version showing contract upgrade patterns
+- **`src/VulnerableLendingPool.sol`** - Educational contract with intentional vulnerabilities
+- **Sample test files** - Testing examples for all demo contracts
+- **Deployment scripts** - Zeus deployment examples
+
+### Managing Demo Files
+You can easily remove all demo files when you're ready to start your own project:
 
 ```bash
-cruft check   # Check for updates
-cruft update  # Apply updates
+make cleanup-demo
 ```
 
-## 🥈 Similar Projects
+This command will:
+- Remove all demo files
+- Keep the project structure intact for your own contracts
 
-Other similar project(s) that you might want to check out:
+**Note**: You can also choose to exclude demo files during template creation by answering "y" to the `cleanup_demo` prompt.
 
-- [foundry-template](https://github.com/foundry-rs/foundry-template) - Official Foundry template
-- [forge-template](https://github.com/FrankieIsLost/forge-template) - Minimal Forge template
-- [foundry-starter-kit](https://github.com/smartcontractkit/foundry-starter-kit) - Chainlink's starter kit
-- [solidity-template](https://github.com/paulrberg/solidity-template) - Paul Razvan Berg's template
+## Module 6: GitHub Workflows
 
-P.S. If you know of any project similar to foundry-template (that isn't listed here), let me know and I'll be happy to list it 😉
+The template includes several pre-configured GitHub Actions workflows located in `{{cookiecutter.project_slug}}/.github/workflows/`:
 
-Forks of foundry-template are welcome as well - given they have significant changes compared to upstream!
+### Core Workflows
+- **`test-template.yml`** - Runs comprehensive testing on every commit
+- **`ci.yml`** - Continuous integration for contract compilation and testing
 
-P.P.S. The emoji for this section fits well :p
+### Conditional Workflows
+- **`cruft-update.yml`** - Automatic template updates (only included if auto-update is enabled during template creation)
+- **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
 
-## 📄 License
+These workflows provide automated testing, security scanning, and deployment validation to ensure code quality and reliability throughout the development process.
 
-This template is licensed under MIT. The generated projects will use the license you choose during setup.
+# Contributing
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-**Happy smart contract development! 🔥⚡** 
+Contributions are always welcome! Open a PR or an issue! If you do contribute please add `"solidity.formatter": "forge"` to your VSCode Settings, or run `forge fmt` before you commit and push.

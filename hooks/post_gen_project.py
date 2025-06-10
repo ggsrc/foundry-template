@@ -119,12 +119,29 @@ def handle_demo_cleanup():
     """Clean up demo files if requested using existing script."""
     if '{{cookiecutter.cleanup_demo}}' == 'y':
         cleanup_script = 'script/cleanup-demo.sh'
+        test_readme = 'test/README.md'
+        
         if os.path.exists(cleanup_script):
             try:
+                # Backup test/README.md if it exists
+                test_readme_backup = None
+                if os.path.exists(test_readme):
+                    test_readme_backup = '/tmp/test_readme_backup.md'
+                    shutil.copy2(test_readme, test_readme_backup)
+                    print("Backed up test/README.md")
+                
                 # Make script executable
                 os.chmod(cleanup_script, 0o755)
+                
                 # Run the cleanup script
                 subprocess.run(['./script/cleanup-demo.sh'], check=True, capture_output=True, text=True)
+                
+                # Restore test/README.md if it was backed up
+                if test_readme_backup and os.path.exists(test_readme_backup):
+                    shutil.copy2(test_readme_backup, test_readme)
+                    os.remove(test_readme_backup)
+                    print("Restored test/README.md")
+                
                 print("Demo cleanup completed")
             except subprocess.CalledProcessError as e:
                 print(f"Demo cleanup failed: {e}")

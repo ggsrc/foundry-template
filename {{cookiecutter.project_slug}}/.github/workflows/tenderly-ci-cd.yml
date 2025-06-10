@@ -91,7 +91,7 @@ jobs:
           forge test --match-contract SimpleTokenDeploy --fork-url ${{ env.TENDERLY_PUBLIC_RPC_URL_8453 }} -vvv
 
       - name: Upload Deployment Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: deployment-artifacts

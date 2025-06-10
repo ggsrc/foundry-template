@@ -1,0 +1,142 @@
+name: Tenderly CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  TENDERLY_ACCESS_KEY: ${{ secrets.TENDERLY_ACCESS_KEY }}
+  DEPLOYER_WALLET_ADDRESS: ${{ vars.DEPLOYER_WALLET_ADDRESS }}
+  DEBUG: tenderly/vnet-github-action@v1.0.14
+
+jobs:
+  tenderly-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Virtual TestNet
+        uses: tenderly/vnet-github-action@v1.0.14
+        with:
+          mode: CD
+          access_key: ${{ secrets.TENDERLY_ACCESS_KEY }}
+          project_name: ${{ vars.TENDERLY_PROJECT_NAME }}
+          account_name: ${{ vars.TENDERLY_ACCOUNT_NAME }}
+          testnet_name: "{{cookiecutter.project_slug}}-staging"
+          network_id: |
+            1
+            8453
+          chain_id_prefix: 7357
+          public_explorer: true
+          verification_visibility: 'src'
+          push_on_complete: true
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install Node.js dependencies
+        run: |
+          if [ -f "package.json" ]; then
+            yarn install
+          fi
+
+      - name: Fund Deployer Account on Mainnet Fork
+        run: |
+          source fixtures/load-fixtures.sh
+          update_foundry_config_and_build $TENDERLY_ACCESS_KEY $TENDERLY_FOUNDRY_VERIFICATION_URL_1 $TENDERLY_CHAIN_ID_1
+          set_wallet_balance $TENDERLY_ADMIN_RPC_URL_1 ${{ vars.DEPLOYER_WALLET_ADDRESS }} $HUNDRED_ETH
+
+      - name: Deploy SimpleToken on Mainnet Fork
+        run: |
+          forge script script/deploy/SimpleToken.s.sol \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+            --rpc-url ${{ env.TENDERLY_PUBLIC_RPC_URL_1 }} \
+            --verifier-url ${{ env.TENDERLY_FOUNDRY_VERIFICATION_URL_1 }} \
+            --etherscan-api-key $TENDERLY_ACCESS_KEY \
+            --slow \
+            --broadcast \
+            --verify \
+            --json > $BUILD_OUTPUT_FILE_1
+
+      - name: Fund Deployer Account on Base Fork
+        run: |
+          source fixtures/load-fixtures.sh
+          update_foundry_config_and_build $TENDERLY_ACCESS_KEY $TENDERLY_FOUNDRY_VERIFICATION_URL_8453 $TENDERLY_CHAIN_ID_8453
+          set_wallet_balance $TENDERLY_ADMIN_RPC_URL_8453 ${{ vars.DEPLOYER_WALLET_ADDRESS }} $HUNDRED_ETH
+
+      - name: Deploy SimpleToken on Base Fork
+        run: |
+          forge script script/deploy/SimpleToken.s.sol \
+            --private-key ${{ secrets.DEPLOYER_PRIVATE_KEY }} \
+            --rpc-url ${{ env.TENDERLY_PUBLIC_RPC_URL_8453 }} \
+            --verifier-url ${{ env.TENDERLY_FOUNDRY_VERIFICATION_URL_8453 }} \
+            --etherscan-api-key $TENDERLY_ACCESS_KEY \
+            --slow \
+            --broadcast \
+            --verify \
+            --json > $BUILD_OUTPUT_FILE_8453
+
+      - name: Run Tests on Virtual TestNets
+        run: |
+          echo "Running post-deployment tests..."
+          forge test --match-contract SimpleTokenDeploy --fork-url ${{ env.TENDERLY_PUBLIC_RPC_URL_1 }} -vvv
+          forge test --match-contract SimpleTokenDeploy --fork-url ${{ env.TENDERLY_PUBLIC_RPC_URL_8453 }} -vvv
+
+      - name: Upload Deployment Artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: deployment-artifacts
+          path: |
+            ${{ env.BUILD_OUTPUT_FILE_1 }}
+            ${{ env.BUILD_OUTPUT_FILE_8453 }}
+            foundry.toml
+
+      - name: Comment PR with TestNet Links
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = `## 🧪 Tenderly Virtual TestNet Deployment
+
+            Your contracts have been deployed to Tenderly Virtual TestNets for testing:
+
+            ### 📋 Deployment Summary
+            - **Contract**: SimpleToken (TDT)
+            - **Networks**: Mainnet Fork & Base Fork
+            - **TestNet**: {{cookiecutter.project_slug}}-staging
+
+            ### 🔗 Explore on Tenderly
+            - **Dashboard**: [View TestNet](https://dashboard.tenderly.co/{{vars.TENDERLY_ACCOUNT_NAME}}/{{vars.TENDERLY_PROJECT_NAME}}/testnet/{{cookiecutter.project_slug}}-staging)
+            - **Public Explorer**: Available after deployment
+
+            ### 🎯 Quick Tests
+            You can interact with the deployed contracts using the RPC URLs provided in the build logs.
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "=== Tenderly Deployment Summary ==="
+          echo "Project: {{cookiecutter.project_slug}}"
+          echo "TestNet: {{cookiecutter.project_slug}}-staging"
+          echo "Networks: Mainnet (${TENDERLY_CHAIN_ID_1}) + Base (${TENDERLY_CHAIN_ID_8453})"
+          echo "Contract: SimpleToken"
+          echo "Public Explorer: Available in Tenderly Dashboard"
+          echo "==================================" 

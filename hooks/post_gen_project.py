@@ -70,29 +70,7 @@ def remove_from_yarn_lock(package_name):
         with open(yarn_lock_file, 'w') as f:
             f.write('\n'.join(filtered_lines))
 
-def remove_from_env_example(env_var):
-    """Remove environment variable line from .env.example."""
-    env_file = '.env.example'
-    if os.path.exists(env_file):
-        with open(env_file, 'r') as f:
-            lines = f.readlines()
-        
-        filtered_lines = [line for line in lines if not line.startswith(f'{env_var}=')]
-        
-        with open(env_file, 'w') as f:
-            f.writelines(filtered_lines)
 
-def remove_comment_from_env_example(comment_text):
-    """Remove comment line containing specific text from .env.example."""
-    env_file = '.env.example'
-    if os.path.exists(env_file):
-        with open(env_file, 'r') as f:
-            lines = f.readlines()
-        
-        filtered_lines = [line for line in lines if comment_text not in line]
-        
-        with open(env_file, 'w') as f:
-            f.writelines(filtered_lines)
 
 def handle_license():
     """Handle license file based on user choice."""
@@ -107,9 +85,6 @@ def handle_zeus_cleanup():
         remove_from_yarn_lock('zeus-templates')
         remove_file('.zeus')
         remove_dir('script/releases')
-        remove_from_env_example('ZEUS_ENV_DEPLOYER')
-        remove_from_env_example('ENVIRONMENT_TYPE')
-        remove_comment_from_env_example('# for zeus deployment demo scripts')
         remove_file('.github/workflows/validate-deployment-scripts.yml')
         print("Zeus cleanup completed")
 
@@ -128,6 +103,16 @@ def handle_openzeppelin_upgradeable():
         remove_from_package_json('@openzeppelin/contracts-upgradeable')
         remove_from_yarn_lock('@openzeppelin/contracts-upgradeable')
         print("OpenZeppelin upgradeable cleanup completed")
+
+def handle_tenderly_cleanup():
+    """Handle Tenderly-related cleanup if user chose not to use Tenderly."""
+    if '{{cookiecutter.use_tenderly}}' == 'n':
+        remove_file('src/SimpleToken.sol')
+        remove_file('script/deploy/SimpleToken.s.sol')
+        remove_file('fixtures/load-fixtures.sh')
+        remove_file('docs/TENDERLY.md')
+        remove_file('.github/workflows/tenderly-ci-cd.yml')
+        print("Tenderly cleanup completed")
 
 def handle_demo_cleanup():
     """Clean up demo files if requested using existing script."""
@@ -207,6 +192,9 @@ def main():
     
     # Handle OpenZeppelin upgradeable
     handle_openzeppelin_upgradeable()
+    
+    # Handle Tenderly cleanup
+    handle_tenderly_cleanup()
     
     # Handle demo cleanup
     handle_demo_cleanup()

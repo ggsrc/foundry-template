@@ -77,6 +77,23 @@ If you selected Zeus during template creation, you get access to advanced deploy
 
 See the [Deployment Guide]({{cookiecutter.project_slug}}/script/releases/README.md) for detailed Zeus usage instructions.
 
+### Tenderly Virtual TestNets
+If you selected Tenderly during template creation, you get comprehensive staging environment support:
+
+- **Virtual TestNets** with mainnet data for realistic testing
+- **Automated CI/CD deployment** to staging environments
+- **Transaction debugging** with detailed execution traces
+- **Contract verification** in Tenderly's explorer
+- **Team collaboration** with shared staging environments
+
+The integration includes:
+- **Multi-network support** (Mainnet + Base forks)
+- **Automatic wallet funding** for deployment accounts
+- **PR deployment previews** with Tenderly dashboard links
+- **Comprehensive documentation** and troubleshooting guides
+
+See the [Tenderly Integration Guide]({{cookiecutter.project_slug}}/docs/TENDERLY.md) for detailed setup and usage instructions.
+
 ## Security
 
 The template includes two static analysis tools for comprehensive security auditing:
@@ -154,6 +171,7 @@ The template includes several pre-configured GitHub Actions workflows located in
 
 ### Conditional Workflows
 - **`cruft-update.yml`** - Automatic template updates (only included if auto-update is enabled during template creation)
+- **`tenderly-ci-cd.yml`** - Tenderly Virtual TestNet deployment and testing (only included if Tenderly is selected during template creation)
 
 ### Setting up Automatic Template Updates
 

@@ -44,6 +44,13 @@ if [ ! -d "$ANALYZER_DIR" ]; then
   echo -e "${YELLOW}Cloning 4naly3er to $ANALYZER_DIR...${NC}"
   git clone https://github.com/Picodes/4naly3er "$ANALYZER_DIR"
   
+  # Apply fix for known issue with uselessOverride detector
+  echo -e "${YELLOW}Applying fix for uselessOverride detector issue...${NC}"
+  if [ -f "$ANALYZER_DIR/src/issues/NC/uselessOverride.ts" ]; then
+    rm -f "$ANALYZER_DIR/src/issues/NC/uselessOverride.ts"
+    echo -e "${GREEN}Removed problematic uselessOverride.ts detector${NC}"
+  fi
+  
   # Install dependencies
   echo -e "${YELLOW}Installing dependencies for 4naly3er...${NC}"
   cd "$ANALYZER_DIR" && yarn install
@@ -53,6 +60,13 @@ else
   # Update code
   echo -e "${YELLOW}Updating 4naly3er...${NC}"
   cd "$ANALYZER_DIR" && git pull
+  
+  # Apply fix for known issue with uselessOverride detector
+  echo -e "${YELLOW}Applying fix for uselessOverride detector issue...${NC}"
+  if [ -f "$ANALYZER_DIR/src/issues/NC/uselessOverride.ts" ]; then
+    rm -f "$ANALYZER_DIR/src/issues/NC/uselessOverride.ts"
+    echo -e "${GREEN}Removed problematic uselessOverride.ts detector${NC}"
+  fi
 fi
 
 # Copy remappings.txt to src directory (if it exists)

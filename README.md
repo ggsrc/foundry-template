@@ -241,12 +241,14 @@ This command will:
 The template includes several pre-configured GitHub Actions workflows located in `{{cookiecutter.project_slug}}/.github/workflows/`:
 
 ### Core Workflows
-- **`test-template.yml`** - Runs comprehensive testing on every commit
-- **`ci.yml`** - Continuous integration for contract compilation and testing
+- **`test.yml`** - Continuous integration for contract compilation and testing
+- **`security-audit.yml`** - Comprehensive security analysis with all four security tools
+- **`typo-check.yml`** - Automated typo detection and correction
 
 ### Conditional Workflows
 - **`cruft-update.yml`** - Automatic template updates (only included if auto-update is enabled during template creation)
 - **`tenderly-ci-cd.yml`** - Tenderly Virtual TestNet deployment and testing (only included if Tenderly is selected during template creation)
+- **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
 
 ### Setting up Automatic Template Updates
 

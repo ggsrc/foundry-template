@@ -206,6 +206,29 @@ def main():
     git_init()
     
     print(f"Project '{{cookiecutter.project_name}}' created successfully!")
+    
+    # Print next steps
+    print("\n" + "="*60)
+    print("🎉 PROJECT SETUP COMPLETE!")
+    print("="*60)
+    print("\n📋 NEXT STEPS:")
+    print("1. Build and test your project:")
+    print("   forge build")
+    print('   forge test --no-match-path "script/**"')
+    print("\n2. If everything works correctly, initialize git:")
+    print("   git add .")
+    print("   git commit -m 'Initial commit'")
+    print("   git push")
+    print("\n3. Explore available commands:")
+    print("   make help")
+    print("\nSECURITY TOOLS:")
+    print("   make audit     # Run all security tools")
+    print("   make slither   # Static analysis")
+    print("   make mythril   # Symbolic execution")
+    print("   make 4naly3er  # Audit report")
+    print("   make aderyn    # Modern static analysis")
+    print("\nFor more information, check the README.md file!")
+    print("="*60)
 
 if __name__ == '__main__':
     main()

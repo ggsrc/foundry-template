@@ -109,7 +109,7 @@ def handle_tenderly_cleanup():
     if '{{cookiecutter.use_tenderly}}' == 'n':
         remove_file('src/SimpleToken.sol')
         remove_file('script/deploy/SimpleToken.s.sol')
-        remove_file('fixtures/load-fixtures.sh')
+        remove_dir('fixtures')
         remove_file('docs/TENDERLY.md')
         remove_file('.github/workflows/tenderly-ci-cd.yml')
         print("Tenderly cleanup completed")

@@ -82,6 +82,18 @@ def remove_from_env_example(env_var):
         with open(env_file, 'w') as f:
             f.writelines(filtered_lines)
 
+def remove_comment_from_env_example(comment_text):
+    """Remove comment line containing specific text from .env.example."""
+    env_file = '.env.example'
+    if os.path.exists(env_file):
+        with open(env_file, 'r') as f:
+            lines = f.readlines()
+        
+        filtered_lines = [line for line in lines if comment_text not in line]
+        
+        with open(env_file, 'w') as f:
+            f.writelines(filtered_lines)
+
 def handle_license():
     """Handle license file based on user choice."""
     if '{{cookiecutter.license}}' == 'None':
@@ -96,6 +108,8 @@ def handle_zeus_cleanup():
         remove_file('.zeus')
         remove_dir('script/releases')
         remove_from_env_example('ZEUS_ENV_DEPLOYER')
+        remove_from_env_example('ENVIRONMENT_TYPE')
+        remove_comment_from_env_example('# for zeus deployment demo scripts')
         remove_file('.github/workflows/validate-deployment-scripts.yml')
         print("Zeus cleanup completed")
 

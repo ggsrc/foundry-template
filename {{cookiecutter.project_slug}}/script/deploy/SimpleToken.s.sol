@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: {{ cookiecutter.spdx_license_identifier }}
-pragma solidity ^0.8.13;
+pragma solidity 0.8.30;
 
 import { Script, console2 } from "forge-std/Script.sol";
 import { SimpleToken } from "../../src/SimpleToken.sol";

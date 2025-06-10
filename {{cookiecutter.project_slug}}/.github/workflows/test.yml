@@ -68,6 +68,13 @@ jobs:
       # Run the test suite excluding script directory.
       - name: Run ${{ matrix.suite }} tests
         run: |
-          forge test --no-match-path "script/**" -vvv
+          # check if there are test files
+          if find test -name "*.sol" -type f | grep -q .; then
+            echo "Found test files, running tests..."
+            forge test --no-match-path "script/**" -vvv
+          else
+            echo "No test files found, skipping tests"
+            exit 0
+          fi
         env:
           FOUNDRY_PROFILE: medium

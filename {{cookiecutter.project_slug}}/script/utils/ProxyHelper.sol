@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: {{ cookiecutter.spdx_license_identifier }}
 pragma solidity 0.8.30;
 
 import "forge-std/Vm.sol";

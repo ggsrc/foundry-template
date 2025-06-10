@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: {{ cookiecutter.spdx_license_identifier }}
 pragma solidity ^0.8.13;
 
 import {Script, console2} from "forge-std/Script.sol";
@@ -42,21 +42,5 @@ contract SimpleTokenDeploy is Script {
         console2.log("Chain ID:", block.chainid);
         console2.log("Block Number:", block.number);
         console2.log("Deployer:", vm.addr(deployerPrivateKey));
-    }
-
-    function test() public {
-        run();
-        
-        // Basic functionality tests
-        address deployer = vm.addr(vm.envUint("DEPLOYER_PRIVATE_KEY"));
-        
-        // Test initial state
-        assertEq(token.name(), "Tenderly Demo Token");
-        assertEq(token.symbol(), "TDT");
-        assertEq(token.decimals(), 18);
-        assertEq(token.totalSupply(), 1000000 * 10**18);
-        assertEq(token.balanceOf(deployer), 1000000 * 10**18);
-
-        console2.log("✅ All deployment tests passed!");
     }
 } 

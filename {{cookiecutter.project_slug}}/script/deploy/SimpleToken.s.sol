@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: {{ cookiecutter.spdx_license_identifier }}
 pragma solidity ^0.8.13;
 
-import {Script, console2} from "forge-std/Script.sol";
-import {SimpleToken} from "../../src/SimpleToken.sol";
+import { Script, console2 } from "forge-std/Script.sol";
+import { SimpleToken } from "../../src/SimpleToken.sol";
 
 /**
  * @title SimpleTokenDeploy
@@ -12,19 +12,19 @@ import {SimpleToken} from "../../src/SimpleToken.sol";
 contract SimpleTokenDeploy is Script {
     SimpleToken public token;
 
-    function setUp() public {}
+    function setUp() public { }
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
-        
+
         vm.startBroadcast(deployerPrivateKey);
 
         // Deploy SimpleToken with demo parameters
         token = new SimpleToken(
-            "Tenderly Demo Token",  // name
-            "TDT",                  // symbol
-            18,                     // decimals
-            1000000                 // total supply (1M tokens)
+            "Tenderly Demo Token", // name
+            "TDT", // symbol
+            18, // decimals
+            1000000 // total supply (1M tokens)
         );
 
         console2.log("SimpleToken deployed to:", address(token));
@@ -43,4 +43,4 @@ contract SimpleTokenDeploy is Script {
         console2.log("Block Number:", block.number);
         console2.log("Deployer:", vm.addr(deployerPrivateKey));
     }
-} 
+}

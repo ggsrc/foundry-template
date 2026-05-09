@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: {{ cookiecutter.spdx_license_identifier }}
 pragma solidity 0.8.30;
 
-import "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
-import "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
-import "@openzeppelin-upgrades/contracts/proxy/utils/UUPSUpgradeable.sol";
+import { Initializable } from "@openzeppelin-upgrades/contracts/proxy/utils/Initializable.sol";
+import { OwnableUpgradeable } from "@openzeppelin-upgrades/contracts/access/OwnableUpgradeable.sol";
+import { UUPSUpgradeable } from "@openzeppelin-upgrades/contracts/proxy/utils/UUPSUpgradeable.sol";
 
 /// @title Counter
 /// @notice A simple upgradable counter contract
@@ -19,7 +19,6 @@ contract Counter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         address initialOwner
     ) public initializer {
         __Ownable_init(initialOwner);
-        __UUPSUpgradeable_init();
         _count = 0;
     }
 

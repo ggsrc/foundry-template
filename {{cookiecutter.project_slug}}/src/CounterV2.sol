@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: {{ cookiecutter.spdx_license_identifier }}
 pragma solidity 0.8.30;
 
-import "./Counter.sol";
+import { Counter } from "./Counter.sol";
 
 /// @title CounterV2
 /// @notice A counter contract with decrement functionality

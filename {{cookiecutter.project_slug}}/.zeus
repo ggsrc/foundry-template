@@ -1,4 +1,0 @@
-{
-	"zeusHost": "{{ cookiecutter.zeus_metadata_repo }}",
-	"migrationDirectory": "script/releases"
-}

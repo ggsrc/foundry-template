@@ -20,26 +20,26 @@ jobs:
           path: "foundry-template"
 
       # Setup Python for cookiecutter
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
-      - name: Install cookiecutter
-        run: pip install cookiecutter
+      - name: Install cruft
+        run: pip install cruft
 
       # Generate full featured project (all dependencies enabled)
       - name: Generate Test Project
         run: |
-          cookiecutter foundry-template --no-input \
-            project_name="TestProject" \
-            contact_email="security@testproject.com" \
-            license="MIT" \
-            use_openzeppelin="y" \
-            use_openzeppelin_upgradeable="y" \
-            use_zeus="y" \
-            zeus_metadata_repo="https://github.com/test-org/test-metadata" \
-            cleanup_demo="n" \
-            enable_auto_update="y"
+          cruft create foundry-template --no-input --extra-context '{
+            "project_name": "TestProject",
+            "contact_email": "security@testproject.com",
+            "license": "MIT",
+            "use_openzeppelin": "y",
+            "use_openzeppelin_upgradeable": "y",
+            "use_tenderly": "n",
+            "cleanup_demo": "n",
+            "enable_auto_update": "y"
+          }'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -80,28 +80,21 @@ jobs:
           test -f foundry.toml && echo "  - foundry.toml ✓"
           test -f package.json && echo "  - package.json ✓"
           test -f remappings.txt && echo "  - remappings.txt ✓"
-          test -f .zeus && echo "  - .zeus ✓"
           test -f SECURITY.md && echo "  - SECURITY.md ✓"
-          
+
           echo "✅ Checking directories exist:"
           test -d src && echo "  - src/ ✓"
           test -d test && echo "  - test/ ✓"
           test -d script && echo "  - script/ ✓"
-          test -d script/releases && echo "  - script/releases/ ✓"
-          
+
           echo "✅ Checking dependencies in package.json:"
           grep -q "@openzeppelin/contracts" package.json && echo "  - OpenZeppelin contracts ✓"
           grep -q "@openzeppelin/contracts-upgradeable" package.json && echo "  - OpenZeppelin upgradeable ✓"
-          grep -q "zeus-templates" package.json && echo "  - Zeus templates ✓"
-          
+
           echo "✅ Checking remappings:"
           grep -q "@openzeppelin/" remappings.txt && echo "  - OpenZeppelin remapping ✓"
           grep -q "@openzeppelin-upgrades/" remappings.txt && echo "  - OpenZeppelin upgradeable remapping ✓"
-          grep -q "@zeus-templates/" remappings.txt && echo "  - Zeus remapping ✓"
-          
-          echo "✅ Checking Zeus configuration:"
-          grep -q "test-org/test-metadata" .zeus && echo "  - Zeus metadata repo ✓"
-          
+
           echo "✅ Checking SECURITY.md content:"
           grep -q "security@testproject.com" SECURITY.md && echo "  - Contact email ✓"
           grep -q "TestProject" SECURITY.md && echo "  - Project name ✓"

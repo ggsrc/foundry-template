@@ -77,16 +77,10 @@ def handle_license():
     if '{{cookiecutter.license}}' == 'None':
         remove_file('LICENSE')
 
-def handle_zeus_cleanup():
-    """Handle zeus-related cleanup if user chose not to use zeus."""
-    if '{{cookiecutter.use_zeus}}' == 'n':
-        remove_from_remapping('@zeus-templates/')
-        remove_from_package_json('zeus-templates')
-        remove_from_yarn_lock('zeus-templates')
-        remove_file('.zeus')
-        remove_dir('script/releases')
-        remove_file('.github/workflows/validate-deployment-scripts.yml')
-        print("Zeus cleanup completed")
+def handle_security_md():
+    """Remove SECURITY.md when no contact email was supplied."""
+    if not '{{cookiecutter.contact_email}}'.strip():
+        remove_file('SECURITY.md')
 
 def handle_openzeppelin():
     """Handle OpenZeppelin dependencies."""
@@ -183,10 +177,10 @@ def main():
     """Main post-generation logic."""
     # Handle license
     handle_license()
-    
-    # Handle Zeus cleanup
-    handle_zeus_cleanup()
-    
+
+    # Handle SECURITY.md
+    handle_security_md()
+
     # Handle OpenZeppelin
     handle_openzeppelin()
     

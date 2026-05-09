@@ -24,21 +24,22 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install cookiecutter
-        run: pip install cookiecutter
+      - name: Install cruft
+        run: pip install cruft
 
       # Generate full featured project (all dependencies enabled)
       - name: Generate Test Project
         run: |
-          cookiecutter foundry-template --no-input \
-            project_name="TestProject" \
-            contact_email="security@testproject.com" \
-            license="MIT" \
-            use_openzeppelin="y" \
-            use_openzeppelin_upgradeable="y" \
-            use_tenderly="n" \
-            cleanup_demo="n" \
-            enable_auto_update="y"
+          cruft create foundry-template --no-input --extra-context '{
+            "project_name": "TestProject",
+            "contact_email": "security@testproject.com",
+            "license": "MIT",
+            "use_openzeppelin": "y",
+            "use_openzeppelin_upgradeable": "y",
+            "use_tenderly": "n",
+            "cleanup_demo": "n",
+            "enable_auto_update": "y"
+          }'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

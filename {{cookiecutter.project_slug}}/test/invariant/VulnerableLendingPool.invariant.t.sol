@@ -73,7 +73,10 @@ contract LendingPoolHandler is Test {
     }
 
     // Deposit operation
-    function deposit(uint256 amount, uint256 actorIndexSeed) external useActor(actorIndexSeed) {
+    function deposit(
+        uint256 amount,
+        uint256 actorIndexSeed
+    ) external useActor(actorIndexSeed) {
         amount = bound(amount, 1, 1e18);
 
         // Track large deposits (might trigger rounding error vulnerability)
@@ -87,7 +90,10 @@ contract LendingPoolHandler is Test {
     }
 
     // Withdraw operation
-    function withdraw(uint256 amountSeed, uint256 actorIndexSeed) external useActor(actorIndexSeed) {
+    function withdraw(
+        uint256 amountSeed,
+        uint256 actorIndexSeed
+    ) external useActor(actorIndexSeed) {
         uint256 balance = pool.balances(currentActor);
         if (balance == 0) return;
 
@@ -124,7 +130,10 @@ contract LendingPoolHandler is Test {
     }
 
     // Add collateral
-    function addCollateral(uint256 amount, uint256 actorIndexSeed) external useActor(actorIndexSeed) {
+    function addCollateral(
+        uint256 amount,
+        uint256 actorIndexSeed
+    ) external useActor(actorIndexSeed) {
         amount = bound(amount, 1, 1e18);
 
         // Try randomly adding amounts near the vulnerability threshold
@@ -141,7 +150,10 @@ contract LendingPoolHandler is Test {
     }
 
     // Borrow operation
-    function borrow(uint256 amountSeed, uint256 actorIndexSeed) external useActor(actorIndexSeed) {
+    function borrow(
+        uint256 amountSeed,
+        uint256 actorIndexSeed
+    ) external useActor(actorIndexSeed) {
         // Check available liquidity
         uint256 availableLiquidity = pool.totalDeposits() - pool.totalBorrows();
         if (availableLiquidity == 0) return;
@@ -187,15 +199,19 @@ contract LendingPoolHandler is Test {
     }
 
     // Repay operation
-    function repay(uint256 amountSeed, uint256 actorIndexSeed) external useActor(actorIndexSeed) {
+    function repay(
+        uint256 amountSeed,
+        uint256 actorIndexSeed
+    ) external useActor(actorIndexSeed) {
         uint256 borrowBalance = pool.borrows(currentActor);
         if (borrowBalance == 0) return;
 
         uint256 amount = bound(amountSeed, 1, borrowBalance);
 
         try pool.repay(amount) {
-            // Repayment successful
-        } catch {
+        // Repayment successful
+        }
+            catch {
             // Repayment failed
         }
 

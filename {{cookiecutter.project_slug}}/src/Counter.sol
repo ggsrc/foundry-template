@@ -19,7 +19,6 @@ contract Counter is Initializable, OwnableUpgradeable, UUPSUpgradeable {
         address initialOwner
     ) public initializer {
         __Ownable_init(initialOwner);
-        __UUPSUpgradeable_init();
         _count = 0;
     }
 

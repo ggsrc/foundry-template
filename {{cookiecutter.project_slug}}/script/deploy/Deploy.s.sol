@@ -13,6 +13,7 @@ import { Script, console } from "forge-std/Script.sol";
 contract Deploy is Script {
     function run() external {
         vm.startBroadcast();
+        console.log("Deploying from:", msg.sender);
         // TODO: deploy your contracts here, e.g.
         //
         //   MyContract c = new MyContract(...);

@@ -38,22 +38,4 @@ cleanup_directory "test/invariant" "true"
 echo "Cleaning audit/ directory..."
 cleanup_directory "audit" "true"
 
-echo "Cleaning script/releases/ directory (preserving README.md)..."
-if [ -d "script/releases" ]; then
-    echo "  Cleaning: script/releases"
-    # Create a temporary directory to store README.md
-    if [ -f "script/releases/README.md" ]; then
-        cp "script/releases/README.md" "/tmp/releases_readme_backup.md"
-    fi
-    # Remove everything in releases
-    rm -rf script/releases/*
-    # Restore README.md if it existed
-    if [ -f "/tmp/releases_readme_backup.md" ]; then
-        cp "/tmp/releases_readme_backup.md" "script/releases/README.md"
-        rm "/tmp/releases_readme_backup.md"
-    fi
-else
-    echo "  Directory script/releases does not exist, skipping..."
-fi
-
 echo "Cleanup completed successfully!"

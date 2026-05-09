@@ -5,7 +5,6 @@
     "forge-std": "foundry-rs/forge-std#3b20d60d14b343ee4f908cb8079495c07f5e8981",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",
-    "solhint": "^5.1.0",
-    "zeus-templates": "Layr-Labs/zeus-templates#5a9709a597cbc1fa4ec2233cba40b9c6545cdcd2"
+    "solhint": "^5.1.0"
   }
 }

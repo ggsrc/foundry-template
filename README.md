@@ -56,28 +56,13 @@ Each testing approach exposes different types of vulnerabilities in the contract
 
 ## Deployment
 
-The template supports two deployment strategies:
-
-### Native Forge Deployment
-If you choose not to use Zeus during template creation, you can deploy contracts using Foundry's native methods:
+Deploy contracts using Foundry's native scripting:
 
 ```bash
-forge script script/Deploy.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
+forge script script/deploy/<YourScript>.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
 ```
 
 For more information, consult the [Foundry Book](https://book.getfoundry.sh/).
-
-### Zeus Deployment
-If you selected Zeus during template creation, you get access to advanced deployment features:
-
-- **Complex deployment orchestration** with dependency management
-- **Deployment metadata tracking** for better project management
-- **Multi-environment support** with consistent deployment patterns
-- **Upgrade management** for proxy contracts
-
-See the [Deployment Guide]({{cookiecutter.project_slug}}/script/releases/README.md) for detailed Zeus usage instructions.
-
-
 
 ## Tenderly Virtual TestNets
 
@@ -221,7 +206,6 @@ The template comes with educational demo files to help you understand smart cont
 - **`src/CounterV2.sol`** - Upgraded version showing contract upgrade patterns
 - **`src/VulnerableLendingPool.sol`** - Educational contract with intentional vulnerabilities
 - **Sample test files** - Testing examples for all demo contracts
-- **Deployment scripts** - Zeus deployment examples
 
 ### Managing Demo Files
 You can easily remove all demo files when you're ready to start your own project:
@@ -248,7 +232,6 @@ The template includes several pre-configured GitHub Actions workflows located in
 ### Conditional Workflows
 - **`cruft-update.yml`** - Automatic template updates (only included if auto-update is enabled during template creation)
 - **`tenderly-ci-cd.yml`** - Tenderly Virtual TestNet deployment and testing (only included if Tenderly is selected during template creation)
-- **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
 
 ### Setting up Automatic Template Updates
 
@@ -292,7 +275,6 @@ gh secret set CICD_DOCKER_BUILD_PAT --body "your_token_here"
 4. Monitor the workflow execution to ensure it works correctly
 
 The workflow will then run automatically every Monday at 2:00 AM UTC to check for template updates.
-- **`validate-deployment-scripts.yml`** - Validates Zeus deployment scripts (only included if Zeus is selected during template creation)
 
 These workflows provide automated testing, security scanning, and deployment validation to ensure code quality and reliability throughout the development process.
 

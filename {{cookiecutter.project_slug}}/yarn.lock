@@ -1032,7 +1032,3 @@ yaml@^2.7.0:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.7.1.tgz#44a247d1b88523855679ac7fa7cda6ed7e135cf6"
   integrity sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==
-
-zeus-templates@Layr-Labs/zeus-templates#5a9709a597cbc1fa4ec2233cba40b9c6545cdcd2:
-  version "0.0.0"
-  resolved "https://codeload.github.com/Layr-Labs/zeus-templates/tar.gz/5a9709a597cbc1fa4ec2233cba40b9c6545cdcd2"

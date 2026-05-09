@@ -37,7 +37,7 @@ if ! command -v myth &> /dev/null; then
 
   if command -v pipx &> /dev/null; then
     echo -e "${YELLOW}Installing mythril via pipx...${NC}"
-    pipx install mythril
+    pipx install mythril || true
   elif command -v pip3 &> /dev/null && pip3 install --user --dry-run mythril &> /dev/null; then
     echo -e "${YELLOW}Installing mythril via pip3 --user...${NC}"
     pip3 install --user mythril

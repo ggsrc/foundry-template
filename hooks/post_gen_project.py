@@ -77,6 +77,11 @@ def handle_license():
     if '{{cookiecutter.license}}' == 'None':
         remove_file('LICENSE')
 
+def handle_security_md():
+    """Remove SECURITY.md when no contact email was supplied."""
+    if not '{{cookiecutter.contact_email}}'.strip():
+        remove_file('SECURITY.md')
+
 def handle_openzeppelin():
     """Handle OpenZeppelin dependencies."""
     if '{{cookiecutter.use_openzeppelin}}' == 'n':
@@ -172,6 +177,9 @@ def main():
     """Main post-generation logic."""
     # Handle license
     handle_license()
+
+    # Handle SECURITY.md
+    handle_security_md()
 
     # Handle OpenZeppelin
     handle_openzeppelin()

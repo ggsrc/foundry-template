@@ -38,7 +38,7 @@ if ! command -v slither &> /dev/null; then
 
   if command -v pipx &> /dev/null; then
     echo -e "${YELLOW}Installing slither-analyzer via pipx...${NC}"
-    pipx install slither-analyzer
+    pipx install slither-analyzer || true
   elif command -v pip3 &> /dev/null && pip3 install --user --dry-run slither-analyzer &> /dev/null; then
     echo -e "${YELLOW}Installing slither-analyzer via pip3 --user...${NC}"
     pip3 install --user slither-analyzer

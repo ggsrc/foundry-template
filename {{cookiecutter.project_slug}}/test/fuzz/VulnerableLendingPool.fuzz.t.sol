@@ -2,22 +2,22 @@
 pragma solidity 0.8.30;
 
 import { Test, console2 } from "forge-std/Test.sol";
-import "../../src/VulnerableLendingPool.sol";
+import { VulnerableLendingPool } from "../../src/VulnerableLendingPool.sol";
 
 contract FuzzTestLendingPool is Test {
     VulnerableLendingPool pool;
     address alice = address(0x1);
-    address liquidity_provider = address(0xCAFE); // New address to provide initial liquidity
+    address liquidityProvider = address(0xCAFE); // New address to provide initial liquidity
 
     function setUp() public {
         pool = new VulnerableLendingPool();
 
         // Give Alice and liquidity provider some initial funds
         vm.deal(alice, 100 ether);
-        vm.deal(liquidity_provider, 100 ether);
+        vm.deal(liquidityProvider, 100 ether);
 
         // Add massive initial liquidity to avoid "Not enough liquidity" errors
-        vm.startPrank(liquidity_provider);
+        vm.startPrank(liquidityProvider);
         pool.deposit(type(uint128).max); // Add a huge amount of liquidity
         vm.stopPrank();
     }

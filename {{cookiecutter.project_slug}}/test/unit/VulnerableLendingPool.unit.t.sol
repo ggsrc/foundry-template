@@ -2,7 +2,7 @@
 pragma solidity 0.8.30;
 
 import { Test, console2 } from "forge-std/Test.sol";
-import "../../src/VulnerableLendingPool.sol";
+import { VulnerableLendingPool } from "../../src/VulnerableLendingPool.sol";
 
 contract UnitTestLendingPool is Test {
     VulnerableLendingPool pool;

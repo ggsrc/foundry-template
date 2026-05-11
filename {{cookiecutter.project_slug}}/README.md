@@ -56,13 +56,56 @@ Each testing approach exposes different types of vulnerabilities in the contract
 
 ## Deployment
 
-Deploy contracts using Foundry's native scripting:
+Deployments go through `script/deploy/deploy.sh`, a thin wrapper around
+`forge script` that enforces keystore-based signing on any real chain --
+a plaintext `DEPLOYER_PRIVATE_KEY` is **rejected** unless the RPC reports
+chain id `31337` (local anvil).
+
+### 1. Import the signing key (one-time)
 
 ```bash
-forge script script/deploy/<YourScript>.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
+# encrypts the key with a password, stored at ~/.foundry/keystores/my-deployer
+cast wallet import my-deployer --interactive
+cast wallet address --account my-deployer   # confirm the address, fund it
 ```
 
-For more information, consult the [Foundry Book](https://book.getfoundry.sh/).
+Hardware-wallet alternative: pass `--ledger` to `deploy.sh` (skip this step).
+
+### 2. Configure `.env`
+
+```bash
+cp .env.example .env
+# edit:
+#   RPC_URL=...                          (required)
+#   ETHERSCAN_API_KEY=...                (optional, enables auto-verify)
+#   VERIFIER=blockscout                  (optional, for non-Etherscan explorers)
+#   VERIFIER_URL=https://<host>/api/     (optional, required for Blockscout)
+#
+# Leave DEPLOYER_PRIVATE_KEY empty -- pass --account or --ledger instead.
+```
+
+### 3. Dry-run, then broadcast
+
+```bash
+# simulate first (no broadcast)
+script/deploy/deploy.sh script/deploy/Deploy.s.sol --dry-run --account my-deployer
+
+# broadcast (forge prompts for the keystore password once)
+script/deploy/deploy.sh script/deploy/Deploy.s.sol           --account my-deployer
+
+# hardware-wallet form (prompts on the device)
+script/deploy/deploy.sh script/deploy/Deploy.s.sol           --ledger
+```
+
+`script/deploy/deploy.sh --help` lists every supported variable and flag,
+including passthrough (`--`) for forwarding `--sig`, `--target-contract`,
+env-arg syntax, etc. to `forge script`.
+
+Local anvil only: `DEPLOYER_PRIVATE_KEY` in `.env` is accepted **only**
+when the RPC returns chain id `31337`. Anything else is a hard error
+pointing you at `cast wallet import`.
+
+For more on Foundry scripting, see the [Foundry Book](https://book.getfoundry.sh/).
 
 ## Tenderly Virtual TestNets
 

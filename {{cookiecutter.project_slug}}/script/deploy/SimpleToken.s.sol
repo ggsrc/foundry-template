@@ -15,9 +15,10 @@ contract SimpleTokenDeploy is Script {
     function setUp() public { }
 
     function run() public {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
-
-        vm.startBroadcast(deployerPrivateKey);
+        // No-arg broadcast: forge uses whatever CLI signer was passed
+        // (--account / --ledger / --private-key), so this works on every
+        // signing path. deploy.sh wires that up.
+        vm.startBroadcast();
 
         // Deploy SimpleToken with demo parameters
         token = new SimpleToken(
@@ -31,7 +32,7 @@ contract SimpleTokenDeploy is Script {
         console2.log("Token name:", token.name());
         console2.log("Token symbol:", token.symbol());
         console2.log("Total supply:", token.totalSupply());
-        console2.log("Deployer balance:", token.balanceOf(vm.addr(deployerPrivateKey)));
+        console2.log("Deployer balance:", token.balanceOf(msg.sender));
 
         vm.stopBroadcast();
 
@@ -41,6 +42,6 @@ contract SimpleTokenDeploy is Script {
         console2.log("Address:", address(token));
         console2.log("Chain ID:", block.chainid);
         console2.log("Block Number:", block.number);
-        console2.log("Deployer:", vm.addr(deployerPrivateKey));
+        console2.log("Deployer:", msg.sender);
     }
 }

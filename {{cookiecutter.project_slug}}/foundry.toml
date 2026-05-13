@@ -11,17 +11,15 @@ cache_path = 'cache'
 optimizer = true
 optimizer_runs = 200
 verbosity = 3
+# Baseline fuzz/invariant budget. `medium` / `intense` below scale from this.
 fuzz = { runs = 256 }
 invariant = { runs = 256, depth = 500 }
 
-# CI fast path (every push / PR) -- same depth as the local default.
-[profile.ci]
-fuzz = { runs = 256 }
-invariant = { runs = 256, depth = 500 }
-
-# Alias referenced by `FOUNDRY_PROFILE=test forge fmt --check` in CI.
-[profile.test]
-fuzz = { runs = 256 }
+# Profiles referenced by name in .github/workflows/test.yml. Left empty so
+# they inherit [profile.default] -- nothing to keep in sync. Override a key
+# here only if CI should diverge from the local default.
+[profile.ci]   # workflow-level FOUNDRY_PROFILE (fmt / build / sizes)
+[profile.test] # `FOUNDRY_PROFILE=test forge fmt --check`
 
 # Used by the CI test job -- deeper fuzzing / invariants.
 [profile.medium]

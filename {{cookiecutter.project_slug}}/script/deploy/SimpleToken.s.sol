@@ -20,6 +20,11 @@ contract SimpleTokenDeploy is Script {
         // signing path. deploy.sh wires that up.
         vm.startBroadcast();
 
+        // `msg.sender` is the broadcaster only inside the broadcast block;
+        // after vm.stopBroadcast() it reverts to the default script sender.
+        // Capture it here so the summary below logs the right address.
+        address deployer = msg.sender;
+
         // Deploy SimpleToken with demo parameters
         token = new SimpleToken(
             "Tenderly Demo Token", // name
@@ -32,7 +37,7 @@ contract SimpleTokenDeploy is Script {
         console2.log("Token name:", token.name());
         console2.log("Token symbol:", token.symbol());
         console2.log("Total supply:", token.totalSupply());
-        console2.log("Deployer balance:", token.balanceOf(msg.sender));
+        console2.log("Deployer balance:", token.balanceOf(deployer));
 
         vm.stopBroadcast();
 
@@ -42,6 +47,6 @@ contract SimpleTokenDeploy is Script {
         console2.log("Address:", address(token));
         console2.log("Chain ID:", block.chainid);
         console2.log("Block Number:", block.number);
-        console2.log("Deployer:", msg.sender);
+        console2.log("Deployer:", deployer);
     }
 }

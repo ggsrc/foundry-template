@@ -162,7 +162,7 @@ if [[ "$BROADCAST" -eq 1 ]]; then
     echo "=================================================================="
     echo " deployed (chain $CHAIN_ID) -- $RUN_JSON"
     if command -v jq >/dev/null 2>&1; then
-      jq -r '.transactions[]
+      jq -r '.transactions[]?
                | select(.transactionType == "CREATE" or .transactionType == "CREATE2")
                | "   \(.contractName // "<unknown>")\t\(.contractAddress)"' "$RUN_JSON" || true
     else

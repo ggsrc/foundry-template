@@ -74,5 +74,10 @@ alva-ai/mono-meta#1115 (ggsrc standing-PR sweep).
 
 ## 7. Outcome
 
-- [ ] Template check green.
-- [ ] Merged.
+- [x] Template check green (run 41753266934).
+- [x] Squash-merged (#7).
+
+## 8. Remaining work
+
+- Optional: the template check could also generate the Tenderly variant,
+  which would have caught the `forge fmt` failure.

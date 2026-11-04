@@ -97,5 +97,9 @@ standing-PR sweep).
 
 ## 7. Outcome
 
-- [ ] Template check green.
-- [ ] Merged.
+- [x] Template check green (run 41751798602).
+- [x] Squash-merged (#6); #7 follows on top.
+
+## 8. Remaining work
+
+- None for #6.

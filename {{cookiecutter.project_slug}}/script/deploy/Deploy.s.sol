@@ -6,10 +6,9 @@ import { Script, console } from "forge-std/Script.sol";
 /// @notice Default deployment script. Replace the body of `run` with your
 ///         contract deployments and run with:
 ///
-///   forge script script/deploy/Deploy.s.sol \
-///     --rpc-url $RPC_URL \
-///     --private-key $DEPLOYER_PRIVATE_KEY \
-///     --broadcast
+///   script/deploy/deploy.sh script/deploy/Deploy.s.sol --account <name>
+///
+///         (see `script/deploy/deploy.sh --help`).
 contract Deploy is Script {
     function run() external {
         vm.startBroadcast();

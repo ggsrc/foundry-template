@@ -56,11 +56,18 @@ Each testing approach exposes different types of vulnerabilities in the contract
 
 ## Deployment
 
-Deploy contracts using Foundry's native scripting:
+Generated projects deploy through `script/deploy/deploy.sh`, a wrapper around
+`forge script` that signs with a Foundry keystore account (`--account`) or a
+Ledger (`--ledger`). A plaintext `DEPLOYER_PRIVATE_KEY` is accepted only on a
+local anvil (chain id 31337):
 
 ```bash
-forge script script/deploy/<YourScript>.s.sol --rpc-url <your_rpc_url> --private-key <your_private_key> --broadcast
+cast wallet import my-deployer --interactive   # once
+script/deploy/deploy.sh script/deploy/Deploy.s.sol --dry-run --account my-deployer
+script/deploy/deploy.sh script/deploy/Deploy.s.sol --account my-deployer
 ```
+
+See the generated project's README and `script/deploy/deploy.sh --help`.
 
 For more information, consult the [Foundry Book](https://book.getfoundry.sh/).
 

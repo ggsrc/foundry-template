@@ -30,7 +30,11 @@
 #   --dry-run              simulate only; do not broadcast (default: broadcast)
 #   --no-verify            skip contract verification even if a key is configured
 #   --                     forward all subsequent args verbatim to `forge script`
-#                          (useful for --sig, --target-contract, env-arg passthrough)
+#                          (useful for --sig, --target-contract, env-arg passthrough).
+#                          Refused after `--`: --rpc-url / --fork-url / -f (the chain
+#                          id check runs against RPC_URL), raw-key signers
+#                          (--private-key, --mnemonics, --interactives) and
+#                          --broadcast (use --dry-run to simulate).
 #   -h | --help            show this help and exit
 #
 set -euo pipefail
@@ -43,8 +47,10 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$REPO_ROOT"
 
 if [[ -f "$REPO_ROOT/.env" ]]; then
+  set -a
   # shellcheck disable=SC1091
-  set -a; source "$REPO_ROOT/.env"; set +a
+  source "$REPO_ROOT/.env"
+  set +a
 fi
 
 die()  { echo "error: $*" >&2; exit 1; }
@@ -79,6 +85,23 @@ done
 
 [[ -f "$SCRIPT_PATH" ]] || die "script not found: $SCRIPT_PATH"
 
+# Arguments after `--` must not undo the checks below: the chain id is read
+# from RPC_URL, the signer is chosen by --account / --ledger, and --dry-run
+# must not broadcast. (Guarded: bash 3.2 with `set -u` rejects "${a[@]}" of
+# an empty array.)
+if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+  for arg in "${EXTRA_ARGS[@]}"; do
+    case "$arg" in
+      --rpc-url|--rpc-url=*|--fork-url|--fork-url=*|-f|-f?*)
+        die "set the RPC with RPC_URL in .env, not after --: the chain id check runs against RPC_URL" ;;
+      --private-key|--private-key=*|--private-keys|--private-keys=*|--mnemonic*|--interactive*|-i)
+        die "choose the signer with --account or --ledger, not after --" ;;
+      --broadcast)
+        die "deploy.sh broadcasts unless --dry-run is given; do not pass --broadcast after --" ;;
+    esac
+  done
+fi
+
 # ----------------------------------------------------------------------------
 # validate config
 # ----------------------------------------------------------------------------
@@ -109,7 +132,7 @@ fi
 # build & run
 # ----------------------------------------------------------------------------
 note "forge build"
-forge build >/dev/null
+forge build
 
 FORGE_ARGS=(script "$SCRIPT_PATH" --rpc-url "$RPC_URL" "${SIGNER_ARGS[@]}")
 
@@ -135,5 +158,18 @@ if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
   FORGE_ARGS+=("${EXTRA_ARGS[@]}")
 fi
 
-note "running: forge ${FORGE_ARGS[*]}"
+# Print the command without the RPC URL (it often carries a provider key),
+# the private key or the explorer API key.
+SHOWN_ARGS=()
+hide=""
+for arg in "${FORGE_ARGS[@]}"; do
+  if [[ -n "$hide" ]]; then SHOWN_ARGS+=("<$hide>"); hide=""; continue; fi
+  SHOWN_ARGS+=("$arg")
+  case "$arg" in
+    --rpc-url)           hide=RPC_URL ;;
+    --private-key)       hide=DEPLOYER_PRIVATE_KEY ;;
+    --etherscan-api-key) hide=ETHERSCAN_API_KEY ;;
+  esac
+done
+note "running: forge ${SHOWN_ARGS[*]}"
 forge "${FORGE_ARGS[@]}"

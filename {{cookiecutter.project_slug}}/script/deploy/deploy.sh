@@ -180,12 +180,13 @@ fi
 
 # Hand DEPLOYER_PRIVATE_KEY to `forge script` only on the raw-key path. On the
 # --account / --ledger paths forge uses the CLI signer; a stray key left in
-# `.env` (exported by `source .env` above) must not silently shadow it for any
-# script that reads it via vm.env*.
+# `.env` must not silently shadow it for any script that reads it via vm.env*.
+# Forge loads `.env` itself but keeps variables that are already set, so set
+# it to empty rather than unsetting it.
 if [[ "${SIGNER_ARGS[0]}" == "--private-key" ]]; then
   export DEPLOYER_PRIVATE_KEY
 else
-  unset DEPLOYER_PRIVATE_KEY
+  export DEPLOYER_PRIVATE_KEY=""
 fi
 
 # Print the command without the RPC URL (it often carries a provider key),

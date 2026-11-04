@@ -20,6 +20,7 @@
         "enable_auto_update": "Enable automatic template updates? (will auto-detect template changes and create PRs to your project every Monday, but requires setting up a GitHub Personal Access Token named 'CICD_DOCKER_BUILD_PAT' in your repository secrets)"
     },
     "_copy_without_render": [
-        ".github/**/*"
+        ".github/**/*",
+        "script/deploy/deploy.sh"
     ]
 }

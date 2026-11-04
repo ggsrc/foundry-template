@@ -43,6 +43,10 @@
 #                          --dry-run to simulate).
 #   -h | --help            show this help and exit
 #
+# On a successful broadcast it prints the deployed contract addresses (parsed
+# from broadcast/<script>/<chainId>/run-latest.json; needs `jq`) plus a short
+# post-deploy checklist.
+#
 set -euo pipefail
 
 # ----------------------------------------------------------------------------
@@ -174,6 +178,17 @@ if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
   FORGE_ARGS+=("${EXTRA_ARGS[@]}")
 fi
 
+# Hand DEPLOYER_PRIVATE_KEY to `forge script` only on the raw-key path. On the
+# --account / --ledger paths forge uses the CLI signer; a stray key left in
+# `.env` must not silently shadow it for any script that reads it via vm.env*.
+# Forge loads `.env` itself but keeps variables that are already set, so set
+# it to empty rather than unsetting it.
+if [[ "${SIGNER_ARGS[0]}" == "--private-key" ]]; then
+  export DEPLOYER_PRIVATE_KEY
+else
+  export DEPLOYER_PRIVATE_KEY=""
+fi
+
 # Print the command without the RPC URL (it often carries a provider key),
 # the private key or the explorer API key.
 SHOWN_ARGS=()
@@ -189,3 +204,31 @@ for arg in "${FORGE_ARGS[@]}"; do
 done
 note "running: forge ${SHOWN_ARGS[*]}"
 forge "${FORGE_ARGS[@]}"
+
+# ----------------------------------------------------------------------------
+# report -- list the contracts that were just deployed
+# ----------------------------------------------------------------------------
+if [[ "$BROADCAST" -eq 1 ]]; then
+  RUN_JSON="broadcast/$(basename "$SCRIPT_PATH")/$CHAIN_ID/run-latest.json"
+  if [[ -f "$RUN_JSON" ]]; then
+    echo
+    echo "=================================================================="
+    echo " deployed (chain $CHAIN_ID) -- $RUN_JSON"
+    if command -v jq >/dev/null 2>&1; then
+      jq -r '.transactions[]?
+               | select(.transactionType == "CREATE" or .transactionType == "CREATE2")
+               | "   \(.contractName // "<unknown>")\t\(.contractAddress)"' "$RUN_JSON" || true
+    else
+      warn "install jq for a parsed address summary; raw broadcast log: $RUN_JSON"
+    fi
+    echo "=================================================================="
+    echo
+    echo "Post-deploy checklist:"
+    echo "  1. Verify each address on the explorer if --verify was skipped."
+    echo "  2. Record the addresses in your deployment registry / README."
+    echo "  3. If ownership should move to a multisig, transfer it now and have"
+    echo "     the multisig accept (e.g. transferOwnership + acceptOwnership)."
+  else
+    warn "broadcast log not found at $RUN_JSON -- check the forge output above"
+  fi
+fi

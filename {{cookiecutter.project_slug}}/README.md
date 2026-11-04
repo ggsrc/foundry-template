@@ -133,9 +133,9 @@ If you selected Tenderly during template creation, you get comprehensive staging
 cp .env.example .env
 # Edit with your Tenderly credentials
 
-# Deploy locally
-source fixtures/load-fixtures.sh
-forge script script/deploy/SimpleToken.s.sol --broadcast
+# Deploy to a Virtual TestNet (RPC_URL = its RPC; signer: see Deployment)
+source fixtures/load-fixtures.sh   # helpers, e.g. set_wallet_balance to fund the signer
+script/deploy/deploy.sh script/deploy/SimpleToken.s.sol --account my-deployer
 ```
 
 ### CI/CD Integration

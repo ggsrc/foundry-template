@@ -15,6 +15,11 @@
 #   ETHERSCAN_API_KEY      explorer API key; enables `--verify`   (optional)
 #   VERIFIER               "etherscan" | "blockscout" | "sourcify" (optional)
 #   VERIFIER_URL           verifier API URL (required for Blockscout) (optional)
+#   DEPLOYER_WALLET_ADDRESS address of the --account / --ledger signer
+#                          (required with those; `cast wallet address --account NAME`).
+#                          Forge cannot read it from the signer before signing,
+#                          so without it the script runs as Foundry's default
+#                          sender and msg.sender (owners, constructor args) is wrong.
 #   DEPLOYER_PRIVATE_KEY   plaintext signing key. REJECTED on any chain
 #                          other than 31337 (local anvil). For mainnet /
 #                          testnet, sign via --account or --ledger so the
@@ -33,8 +38,9 @@
 #                          (useful for --sig, --target-contract, env-arg passthrough).
 #                          Refused after `--`: --rpc-url / --fork-url / -f (the chain
 #                          id check runs against RPC_URL), raw-key signers
-#                          (--private-key, --mnemonics, --interactives) and
-#                          --broadcast (use --dry-run to simulate).
+#                          (--private-key, --mnemonics, --interactives), --sender
+#                          (set DEPLOYER_WALLET_ADDRESS) and --broadcast (use
+#                          --dry-run to simulate).
 #   -h | --help            show this help and exit
 #
 set -euo pipefail
@@ -96,6 +102,8 @@ if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
         die "set the RPC with RPC_URL in .env, not after --: the chain id check runs against RPC_URL" ;;
       --private-key|--private-key=*|--private-keys|--private-keys=*|--mnemonic*|--interactive*|-i)
         die "choose the signer with --account or --ledger, not after --" ;;
+      --sender|--sender=*)
+        die "set DEPLOYER_WALLET_ADDRESS in .env, not --sender after --" ;;
       --broadcast)
         die "deploy.sh broadcasts unless --dry-run is given; do not pass --broadcast after --" ;;
     esac
@@ -126,6 +134,14 @@ if [[ ${#SIGNER_ARGS[@]} -eq 0 ]]; then
   : "${DEPLOYER_PRIVATE_KEY:?set DEPLOYER_PRIVATE_KEY (anvil only) or pass --account / --ledger}"
   warn "using plaintext DEPLOYER_PRIVATE_KEY against chain $CHAIN_ID (anvil) -- only acceptable for local dev"
   SIGNER_ARGS=(--private-key "$DEPLOYER_PRIVATE_KEY")
+else
+  # Forge learns the address of a keystore or Ledger signer only when it
+  # signs; the script itself would run as Foundry's default sender.
+  [[ -n "${DEPLOYER_WALLET_ADDRESS:-}" ]] || die "set DEPLOYER_WALLET_ADDRESS in .env to the signer's address:
+         cast wallet address ${SIGNER_ARGS[*]}"
+  [[ "$DEPLOYER_WALLET_ADDRESS" =~ ^0x[0-9a-fA-F]{40}$ ]] || die "DEPLOYER_WALLET_ADDRESS is not an address: $DEPLOYER_WALLET_ADDRESS"
+  note "signer: ${SIGNER_ARGS[*]} as $DEPLOYER_WALLET_ADDRESS"
+  SIGNER_ARGS+=(--sender "$DEPLOYER_WALLET_ADDRESS")
 fi
 
 # ----------------------------------------------------------------------------

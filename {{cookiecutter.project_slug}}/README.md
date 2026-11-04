@@ -77,6 +77,8 @@ Hardware-wallet alternative: pass `--ledger` to `deploy.sh` (skip this step).
 cp .env.example .env
 # edit:
 #   RPC_URL=...                          (required)
+#   DEPLOYER_WALLET_ADDRESS=0x...        (required with --account / --ledger;
+#                                         the address printed in step 1)
 #   ETHERSCAN_API_KEY=...                (optional, enables auto-verify)
 #   VERIFIER=blockscout                  (optional, for non-Etherscan explorers)
 #   VERIFIER_URL=https://<host>/api/     (optional, required for Blockscout)

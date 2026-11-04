@@ -16,6 +16,12 @@ standing-PR sweep).
   including the anvil key and `ETHERSCAN_API_KEY`; `-- --rpc-url ...`
   sent the transaction to an RPC other than the one whose chain id was
   checked.
+- Found while testing #6: with `--account` (or `--ledger`) and no
+  `--sender`, Forge signs and sends from the keystore account, but runs
+  the script as its default sender `0x1804c8AB…`. `msg.sender` in the
+  script, and every owner or constructor argument taken from it, is that
+  address, which no one controls. Foundry's documentation pairs
+  `--account` with `--sender`.
 
 ## 2. Behavior after this change
 
@@ -30,6 +36,10 @@ standing-PR sweep).
   raw-key signers (`--private-key(s)`, `--mnemonic*`, `--interactive*`,
   `-i`) and `--broadcast`.
 - B5 `forge build` output is shown.
+- B6 With `--account` or `--ledger`, `DEPLOYER_WALLET_ADDRESS` (in
+  `.env`) is required and passed as `--sender`; the wrapper refuses
+  `--sender` after `--`. A wrong address fails at broadcast, before any
+  transaction is sent (Forge has no wallet for it).
 
 ## 3. Decisions
 
@@ -40,12 +50,18 @@ standing-PR sweep).
   chain id of an overridden RPC: one RPC, one check.
 - D3 Secrets stay on the `forge` command line (as in g-token-vault); only
   the printed copy is masked.
+- D4 The signer address comes from `.env` rather than from
+  `cast wallet address --account`, which would ask for the keystore
+  password a second time. The name `DEPLOYER_WALLET_ADDRESS` is the one
+  `.env.example` already had on `main`, so existing `.env` files keep
+  working.
 
 ## 4. Changes
 
 - `cookiecutter.json`: `script/deploy/deploy.sh` in `_copy_without_render`.
-- `script/deploy/deploy.sh`: B3, B4, B5; `.env` sourcing split so the
+- `script/deploy/deploy.sh`: B3–B6; `.env` sourcing split so the
   ShellCheck directive applies to `source`.
+- `.env.example`, generated `README.md`: `DEPLOYER_WALLET_ADDRESS`.
 - `script/deploy/Deploy.s.sol`, root `README.md`: usage points to
   `deploy.sh`.
 

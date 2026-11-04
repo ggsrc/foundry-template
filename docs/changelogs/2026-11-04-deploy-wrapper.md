@@ -67,7 +67,29 @@ standing-PR sweep).
 
 ## 5. Verification
 
-See section 7.
+- `bash -n` and ShellCheck (`koalaman/shellcheck:stable`): clean.
+- Generated with `cruft create` from this branch in `python:3.12`, using the
+  CI's answers: `deploy.sh` byte-identical to the template file and
+  executable; `yarn install`, `forge build`, `forge test`,
+  `forge fmt --check` pass (`ghcr.io/foundry-rs/foundry:stable`, forge
+  1.5.1).
+- `deploy.sh` against two anvils (chain 31337, chain 1337) with a script
+  that deploys `Box(msg.sender)`. A fake token in `RPC_URL`, the anvil key
+  and a fake `ETHERSCAN_API_KEY` never appear in the output:
+  - 31337 + plaintext key: dry run and broadcast work; owner = key
+    address; printed command shows the three placeholders (B2, B3).
+  - 1337 + plaintext key: refused with the `cast wallet import` steps (B2).
+  - 1337 + `--account` without `DEPLOYER_WALLET_ADDRESS`: refused with
+    `cast wallet address --account <name>`; with a malformed value:
+    refused (B6).
+  - 1337 + `--account` + another account's address: Forge stops with
+    `No associated wallet`; both nonces unchanged (B6).
+  - 1337 + `--account` + the right address (stray key in `.env`): owner =
+    keystore account, nonce 0 → 1 (B6).
+  - After `--`: `--sender`, `--rpc-url`, `-f<url>`, `--private-key`, and
+    `--broadcast` with `--dry-run` are refused (B4, B6).
+- Before the `--sender` fix, the same `--account` broadcast deployed from
+  the keystore account but logged `msg.sender` = `0x1804c8AB…`.
 
 ## 6. Human decisions
 
